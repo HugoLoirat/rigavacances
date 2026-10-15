@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+  
   <style>
     :root {
       --bg-paper: #FAF5EE;
@@ -45,8 +45,8 @@
       background-color: var(--bg-paper);
       color: var(--text-main);
       line-height: 1.55;
-      /* Espace généreux en bas pour qu'aucun badge externe ne gêne jamais la lecture */
-      padding-bottom: 110px;
+      /* Marge généreuse en bas pour qu'aucun badge Netlify ou barre système ne gêne */
+      padding-bottom: 120px;
       max-width: 540px;
       margin: 0 auto;
       min-height: 100vh;
@@ -68,33 +68,32 @@
       overflow: hidden;
     }
 
-    /* Cercles décoratifs flottants en arrière-plan */
     .hero-header::before,
     .hero-header::after {
       content: "";
       position: absolute;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(244, 185, 97, 0.22) 0%, rgba(244, 185, 97, 0) 70%);
+      background: radial-gradient(circle, rgba(244, 185, 97, 0.24) 0%, rgba(244, 185, 97, 0) 70%);
       pointer-events: none;
-      animation: floatOrb 8s ease-in-out infinite alternate;
+      animation: floatOrb 7s ease-in-out infinite alternate;
     }
     .hero-header::before {
-      width: 220px;
-      height: 220px;
-      top: -80px;
-      right: -50px;
+      width: 230px;
+      height: 230px;
+      top: -85px;
+      right: -45px;
     }
     .hero-header::after {
-      width: 180px;
-      height: 180px;
-      bottom: -70px;
-      left: -40px;
-      animation-delay: -4s;
+      width: 190px;
+      height: 190px;
+      bottom: -75px;
+      left: -45px;
+      animation-delay: -3.5s;
     }
 
     @keyframes floatOrb {
       0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(-15px, 12px) scale(1.12); }
+      100% { transform: translate(-16px, 14px) scale(1.14); }
     }
 
     .hero-badge {
@@ -138,13 +137,13 @@
     }
 
     .progress-bar-fill {
-      background: linear-gradient(90deg, #F4B961, #FFD98E, #F4B961);
+      background: linear-gradient(90deg, #F4B961, #FFE09E, #F4B961);
       background-size: 200% 100%;
       height: 100%;
       width: 0%;
       border-radius: 99px;
-      transition: width 0.55s var(--spring);
-      animation: shimmer 3s infinite linear;
+      transition: width 0.6s var(--spring);
+      animation: shimmer 2.8s infinite linear;
     }
 
     @keyframes shimmer {
@@ -161,7 +160,7 @@
       font-weight: 500;
     }
 
-    /* NOUVELLE BARRE DE NAVIGATION COLLÉE EN HAUT (ZÉRO GÊNE EN BAS) */
+    /* MENU FIXÉ EN HAUT AVEC PILULE COULISSANTE (ZÉRO GÊNE EN BAS) */
     .top-sticky-nav {
       position: sticky;
       top: 0;
@@ -171,19 +170,36 @@
       -webkit-backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border-soft);
       padding: 8px 10px;
-      box-shadow: 0 4px 16px rgba(44, 34, 30, 0.05);
+      box-shadow: 0 6px 20px rgba(44, 34, 30, 0.06);
     }
 
     .nav-pills-wrap {
+      position: relative;
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 4px;
       background: var(--bg-warm);
       padding: 4px;
       border-radius: 16px;
     }
 
+    /* Pilule blanche animée qui glisse sous l'onglet actif */
+    .nav-glider {
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      left: 4px;
+      width: calc((100% - 8px) / 5);
+      background: #FFFFFF;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(44, 34, 30, 0.1);
+      transition: transform 0.38s var(--spring);
+      pointer-events: none;
+      z-index: 0;
+    }
+
     .nav-btn {
+      position: relative;
+      z-index: 1;
       background: transparent;
       border: none;
       border-radius: 12px;
@@ -198,27 +214,24 @@
       cursor: pointer;
       padding: 7px 2px;
       font-family: inherit;
-      transition: all 0.28s var(--spring);
+      transition: color 0.25s ease, transform 0.2s var(--spring);
     }
 
     .nav-btn .ico {
       font-size: 1.15rem;
-      transition: transform 0.28s var(--spring);
+      transition: transform 0.3s var(--spring);
     }
 
     .nav-btn.active {
-      background: #FFFFFF;
       color: var(--accent-terra);
-      box-shadow: 0 3px 10px rgba(44, 34, 30, 0.09);
-      transform: scale(1.02);
     }
 
     .nav-btn.active .ico {
-      transform: scale(1.18) translateY(-1px);
+      transform: scale(1.2) translateY(-1px);
     }
 
     .nav-btn:active {
-      transform: scale(0.94);
+      transform: scale(0.92);
     }
 
     /* CONTENEURS D'ONGLETS AVEC ANIMATION */
@@ -229,11 +242,11 @@
 
     .tab-section.active {
       display: block;
-      animation: tabAppear 0.38s var(--smooth) both;
+      animation: tabAppear 0.4s var(--smooth) both;
     }
 
     @keyframes tabAppear {
-      from { opacity: 0; transform: translateY(12px) scale(0.99); }
+      from { opacity: 0; transform: translateY(14px) scale(0.985); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
@@ -243,8 +256,13 @@
     }
 
     @keyframes cardCascade {
-      from { opacity: 0; transform: translateY(18px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(20px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes stepReveal {
+      from { opacity: 0; transform: translateX(-8px); }
+      to { opacity: 1; transform: translateX(0); }
     }
 
     /* FILTRES DE JOURS (PILLS HORIZONTAUX) */
@@ -267,7 +285,7 @@
       font-size: 0.8rem;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.25s var(--spring);
+      transition: all 0.28s var(--spring);
       text-align: center;
     }
 
@@ -279,7 +297,7 @@
     }
 
     .day-pill:active {
-      transform: scale(0.93);
+      transform: scale(0.92);
     }
 
     .day-pill.active {
@@ -350,7 +368,8 @@
       border-bottom: 1px solid #F3ECE4;
       align-items: flex-start;
       border-radius: 10px;
-      transition: background-color 0.25s ease, transform 0.2s ease;
+      animation: stepReveal 0.38s var(--smooth) both;
+      transition: background-color 0.25s ease, transform 0.2s var(--spring);
     }
     .step-item:last-child { border-bottom: none; padding-bottom: 2px; }
 
@@ -366,13 +385,13 @@
       display: grid;
       place-content: center;
       background: #FFF;
-      transition: all 0.25s var(--spring);
+      transition: all 0.28s var(--spring);
     }
 
     .step-checkbox:checked {
       background: var(--accent-forest);
       border-color: var(--accent-forest);
-      transform: scale(1.1);
+      transform: scale(1.12) rotate(3deg);
     }
 
     .step-checkbox:checked::after {
@@ -693,26 +712,27 @@
     </div>
   </header>
 
-  <!-- MENU STICKY EN HAUT (PLUS RIEN EN BAS DE L'ÉCRAN !) -->
+  <!-- MENU STICKY EN HAUT AVEC PILULE COULISSANTE (ZÉRO BOUTON EN BAS !) -->
   <nav class="top-sticky-nav">
     <div class="nav-pills-wrap">
-      <button class="nav-btn active" onclick="switchTab('itineraire', this)">
+      <div class="nav-glider" id="navGlider"></div>
+      <button class="nav-btn active" onclick="switchTab('itineraire', this, 0)">
         <span class="ico">🗓️</span>
         <span>Programme</span>
       </button>
-      <button class="nav-btn" onclick="switchTab('gourmand', this)">
+      <button class="nav-btn" onclick="switchTab('gourmand', this, 1)">
         <span class="ico">🥐</span>
         <span>Fika & Goûts</span>
       </button>
-      <button class="nav-btn" onclick="switchTab('options', this)">
+      <button class="nav-btn" onclick="switchTab('options', this, 2)">
         <span class="ico">✨</span>
         <span>Options</span>
       </button>
-      <button class="nav-btn" onclick="switchTab('infos', this)">
+      <button class="nav-btn" onclick="switchTab('infos', this, 3)">
         <span class="ico">🎫</span>
         <span>Billets/Pass</span>
       </button>
-      <button class="nav-btn" onclick="switchTab('budget', this)">
+      <button class="nav-btn" onclick="switchTab('budget', this, 4)">
         <span class="ico">💰</span>
         <span>Budget</span>
       </button>
@@ -1426,12 +1446,14 @@
         ? itineraryData
         : itineraryData.filter(d => d.id === currentDayFilter);
 
-      container.innerHTML = filtered.map((day, index) => {
-        const stepsHtml = day.steps.map(s => {
+      container.innerHTML = filtered.map((day, idx) => {
+        const cardDelay = (idx * 0.06).toFixed(2);
+        const stepsHtml = day.steps.map((s, sIdx) => {
           const isDone = !!checkedSteps[s.id];
+          const stepDelay = (idx * 0.05 + sIdx * 0.04).toFixed(2);
           return `
-            <div class="step-item ${isDone ? 'done' : ''}" id="row_${s.id}">
-              <input type="checkbox" class="step-checkbox" ${isDone ? 'checked' : ''} onchange="toggleStep('${s.id}', this)" />
+            <div class="step-item ${isDone ? 'done' : ''}" id="row_${s.id}" style="animation-delay: ${stepDelay}s;">
+              <input type="checkbox" class="step-checkbox" ${isDone ? 'checked' : ''} onchange="toggleStep('${s.id}', event)" />
               <div class="step-content">
                 <div class="step-top">
                   <span class="step-time">${s.time}</span>
@@ -1450,7 +1472,7 @@
         }).join("");
 
         return `
-          <article class="day-card" style="animation-delay: ${Math.min(index * 0.06, 0.5)}s;">
+          <article class="day-card" style="animation-delay: ${cardDelay}s;">
             <div class="day-card-header">
               <div>
                 <span class="day-tag ${day.tagClass}">${day.tag}</span>
@@ -1466,34 +1488,33 @@
       }).join("");
     }
 
-    function toggleStep(stepId, checkboxEl) {
+    function spawnConfetti(x, y) {
+      const colors = ["#C85A32", "#2D5A4C", "#D49B35", "#F4B961", "#E07A5F"];
+      for (let i = 0; i < 16; i++) {
+        const dot = document.createElement("div");
+        dot.className = "confetti-dot";
+        dot.style.left = x + "px";
+        dot.style.top = y + "px";
+        dot.style.backgroundColor = colors[i % colors.length];
+        const angle = (Math.PI * 2 * i) / 16;
+        const dist = 26 + Math.random() * 38;
+        dot.style.setProperty("--tx", Math.cos(angle) * dist + "px");
+        dot.style.setProperty("--ty", Math.sin(angle) * dist - 12 + "px");
+        document.body.appendChild(dot);
+        setTimeout(() => dot.remove(), 700);
+      }
+    }
+
+    function toggleStep(stepId, evt) {
       checkedSteps[stepId] = !checkedSteps[stepId];
       localStorage.setItem(STORAGE_CHECKS, JSON.stringify(checkedSteps));
       const row = document.getElementById("row_" + stepId);
       if (row) row.classList.toggle("done", checkedSteps[stepId]);
-      if (checkedSteps[stepId] && checkboxEl) launchConfetti(checkboxEl);
-      updateGlobalProgress();
-    }
-
-    // PETITE EXPLOSION DE CONFETTIS AUTOUR DE LA CASE COCHÉE
-    function launchConfetti(el) {
-      const rect = el.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      const colors = ["#C85A32", "#2D5A4C", "#D49B35", "#F4B961", "#A3421F"];
-      for (let i = 0; i < 14; i++) {
-        const dot = document.createElement("span");
-        dot.className = "confetti-dot";
-        const angle = (Math.PI * 2 * i) / 14;
-        const dist = 28 + Math.random() * 26;
-        dot.style.left = cx + "px";
-        dot.style.top = cy + "px";
-        dot.style.background = colors[i % colors.length];
-        dot.style.setProperty("--tx", Math.cos(angle) * dist + "px");
-        dot.style.setProperty("--ty", Math.sin(angle) * dist + "px");
-        document.body.appendChild(dot);
-        setTimeout(() => dot.remove(), 750);
+      if (checkedSteps[stepId] && evt && evt.target) {
+        const rect = evt.target.getBoundingClientRect();
+        spawnConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
       }
+      updateGlobalProgress();
     }
 
     function updateGlobalProgress() {
@@ -1507,15 +1528,20 @@
       });
       const pct = total > 0 ? Math.round((done / total) * 100) : 0;
       document.getElementById("globalProgressFill").style.width = pct + "%";
-      document.getElementById("progressText").textContent = `${done} / ${total} étapes complétées (${pct}%)`;
+      document.getElementById("progressText").textContent = `${done} / ${total} étapes visitées (${pct}%)`;
     }
 
-    // NAVIGATION PAR ONGLETS
-    function switchTab(tabName, btnEl) {
+    // NAVIGATION PAR ONGLETS AVEC PILULE GLISSANTE
+    function switchTab(tabName, btnEl, index) {
       document.querySelectorAll(".tab-section").forEach(s => s.classList.remove("active"));
       document.getElementById("tab-" + tabName).classList.add("active");
       document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
       btnEl.classList.add("active");
+
+      const glider = document.getElementById("navGlider");
+      if (glider && typeof index === "number") {
+        glider.style.transform = `translateX(${index * 100}%)`;
+      }
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
