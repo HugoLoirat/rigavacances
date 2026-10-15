@@ -1717,20 +1717,21 @@
       `).join("");
     }
 
-    function initOrUpdateMap() {
+function initOrUpdateMap() {
       if (!mapInstance) {
         mapInstance = L.map("voyageMap", { zoomControl: true }).setView([56.9489, 24.1064], 14);
-        L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-          attribution: "&copy; OpenStreetMap & Carto",
+        
+        // Fond de carte OpenStreetMap officiel (100% gratuit, sans aucune API Key)
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "&copy; OpenStreetMap",
           maxZoom: 19
         }).addTo(mapInstance);
       }
       setTimeout(() => {
         mapInstance.invalidateSize();
         drawDayOnMap();
-      }, 120);
+      }, 150);
     }
-
     function selectMapDay(dayId, stepIdx = 0) {
       stopRealGps();
       mapCurrentDayId = dayId;
