@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Carnet de Voyage • Riga & Stockholm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-paper: #FAF5EE;
+      --bg-card: #FFFFFF;
+      --bg-warm: #F3EAE0;
+      --bg-accent-light: #FCEEE9;
+      --bg-sage-light: #EBF2EE;
+      --bg-gold-light: #FDF6E4;
+      --text-main: #2C221E;
+      --text-muted: #6E5D54;
+      --accent-terra: #C85A32;
+      --accent-terra-dark: #A3421F;
+      --accent-forest: #2D5A4C;
+      --accent-gold: #D49B35;
+      --border-soft: #E6DBD0;
+      --shadow-card: 0 8px 24px rgba(44, 34, 30, 0.06);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --smooth: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-paper);
+      color: var(--text-main);
+      line-height: 1.55;
+      /* Espace généreux en bas pour qu'aucun badge externe ne gêne jamais la lecture */
+      padding-bottom: 110px;
+      max-width: 540px;
+      margin: 0 auto;
+      min-height: 100vh;
+      box-shadow: 0 0 40px rgba(0,0,0,0.05);
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .serif {
+      font-family: 'Fraunces', Georgia, serif;
+      font-weight: 700;
+    }
+
+    /* HEADER CARNET DE VOYAGE ANIMÉ */
+    .hero-header {
+      background: linear-gradient(155deg, #2D5A4C 0%, #1B3B32 100%);
+      color: #FAF5EE;
+      padding: 24px 20px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Cercles décoratifs flottants en arrière-plan */
+    .hero-header::before,
+    .hero-header::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(244, 185, 97, 0.22) 0%, rgba(244, 185, 97, 0) 70%);
+      pointer-events: none;
+      animation: floatOrb 8s ease-in-out infinite alternate;
+    }
+    .hero-header::before {
+      width: 220px;
+      height: 220px;
+      top: -80px;
+      right: -50px;
+    }
+    .hero-header::after {
+      width: 180px;
+      height: 180px;
+      bottom: -70px;
+      left: -40px;
+      animation-delay: -4s;
+    }
+
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-15px, 12px) scale(1.12); }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(8px);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      animation: slideDown 0.5s var(--smooth) both;
+    }
+
+    .hero-header h1 {
+      font-size: 1.65rem;
+      line-height: 1.2;
+      margin-bottom: 4px;
+      animation: slideDown 0.6s var(--smooth) 0.05s both;
+    }
+
+    .hero-subtitle {
+      font-size: 0.86rem;
+      opacity: 0.9;
+      margin-bottom: 14px;
+      animation: slideDown 0.6s var(--smooth) 0.1s both;
+    }
+
+    .progress-bar-wrap {
+      background: rgba(255, 255, 255, 0.18);
+      border-radius: 99px;
+      height: 9px;
+      width: 100%;
+      overflow: hidden;
+      margin-top: 6px;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #F4B961, #FFD98E, #F4B961);
+      background-size: 200% 100%;
+      height: 100%;
+      width: 0%;
+      border-radius: 99px;
+      transition: width 0.55s var(--spring);
+      animation: shimmer 3s infinite linear;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      opacity: 0.94;
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    /* NOUVELLE BARRE DE NAVIGATION COLLÉE EN HAUT (ZÉRO GÊNE EN BAS) */
+    .top-sticky-nav {
+      position: sticky;
+      top: 0;
+      z-index: 900;
+      background: rgba(250, 245, 238, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-soft);
+      padding: 8px 10px;
+      box-shadow: 0 4px 16px rgba(44, 34, 30, 0.05);
+    }
+
+    .nav-pills-wrap {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      background: var(--bg-warm);
+      padding: 4px;
+      border-radius: 16px;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      color: var(--text-muted);
+      font-size: 0.67rem;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 7px 2px;
+      font-family: inherit;
+      transition: all 0.28s var(--spring);
+    }
+
+    .nav-btn .ico {
+      font-size: 1.15rem;
+      transition: transform 0.28s var(--spring);
+    }
+
+    .nav-btn.active {
+      background: #FFFFFF;
+      color: var(--accent-terra);
+      box-shadow: 0 3px 10px rgba(44, 34, 30, 0.09);
+      transform: scale(1.02);
+    }
+
+    .nav-btn.active .ico {
+      transform: scale(1.18) translateY(-1px);
+    }
+
+    .nav-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* CONTENEURS D'ONGLETS AVEC ANIMATION */
+    .tab-section {
+      display: none;
+      padding: 16px 16px 24px;
+    }
+
+    .tab-section.active {
+      display: block;
+      animation: tabAppear 0.38s var(--smooth) both;
+    }
+
+    @keyframes tabAppear {
+      from { opacity: 0; transform: translateY(12px) scale(0.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes cardCascade {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* FILTRES DE JOURS (PILLS HORIZONTAUX) */
+    .day-selector {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 2px 2px 14px;
+      scrollbar-width: none;
+    }
+    .day-selector::-webkit-scrollbar { display: none; }
+
+    .day-pill {
+      flex: 0 0 auto;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-soft);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: 14px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s var(--spring);
+      text-align: center;
+    }
+
+    .day-pill span.sub {
+      display: block;
+      font-size: 0.67rem;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+
+    .day-pill:active {
+      transform: scale(0.93);
+    }
+
+    .day-pill.active {
+      background: var(--accent-terra);
+      border-color: var(--accent-terra);
+      color: #FFF;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(200, 90, 50, 0.28);
+    }
+
+    /* CARTES DE JOURNÉE ANIMÉES EN CASCADE */
+    .day-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-card);
+      animation: cardCascade 0.45s var(--smooth) both;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .day-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      border-bottom: 1px dashed var(--border-soft);
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+
+    .day-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 3px 9px;
+      border-radius: 6px;
+      margin-bottom: 5px;
+    }
+
+    .tag-riga { background: var(--bg-accent-light); color: var(--accent-terra-dark); }
+    .tag-stockholm { background: var(--bg-sage-light); color: var(--accent-forest); }
+    .tag-chill { background: var(--bg-gold-light); color: #9A6B15; }
+
+    .day-title {
+      font-size: 1.18rem;
+      color: var(--text-main);
+    }
+
+    .day-tip-box {
+      background: var(--bg-gold-light);
+      border-left: 3.5px solid var(--accent-gold);
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      color: #5C4312;
+      margin-bottom: 14px;
+    }
+
+    /* ÉTAPES / CHECKLIST D'ACTIVITÉS */
+    .step-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 6px;
+      border-bottom: 1px solid #F3ECE4;
+      align-items: flex-start;
+      border-radius: 10px;
+      transition: background-color 0.25s ease, transform 0.2s ease;
+    }
+    .step-item:last-child { border-bottom: none; padding-bottom: 2px; }
+
+    .step-checkbox {
+      appearance: none;
+      width: 23px;
+      height: 23px;
+      border: 2px solid var(--accent-terra);
+      border-radius: 7px;
+      margin-top: 2px;
+      flex-shrink: 0;
+      cursor: pointer;
+      display: grid;
+      place-content: center;
+      background: #FFF;
+      transition: all 0.25s var(--spring);
+    }
+
+    .step-checkbox:checked {
+      background: var(--accent-forest);
+      border-color: var(--accent-forest);
+      transform: scale(1.1);
+    }
+
+    .step-checkbox:checked::after {
+      content: "✓";
+      color: #FFF;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .step-content { flex: 1; }
+
+    .step-item.done {
+      background-color: #FAF7F2;
+    }
+    .step-item.done .step-title {
+      text-decoration: line-through;
+      opacity: 0.52;
+    }
+    .step-item.done .step-desc {
+      opacity: 0.52;
+    }
+
+    .step-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+
+    .step-time {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--accent-terra);
+      text-transform: uppercase;
+    }
+
+    .step-price {
+      font-size: 0.73rem;
+      font-weight: 600;
+      background: var(--bg-warm);
+      color: var(--text-main);
+      padding: 2px 8px;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+
+    .step-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 3px;
+      transition: opacity 0.2s;
+    }
+
+    .step-desc {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      transition: opacity 0.2s;
+    }
+
+    .step-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn-map {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent-forest);
+      background: var(--bg-sage-light);
+      padding: 6px 12px;
+      border-radius: 9px;
+      transition: transform 0.2s var(--spring), background 0.2s;
+    }
+    .btn-map:active {
+      transform: scale(0.93);
+      background: #DCE9E2;
+    }
+
+    /* CARTES GÉNÉRIQUES (GASTRONOMIE, OPTIONS, INFOS) */
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-card);
+      animation: cardCascade 0.45s var(--smooth) both;
+    }
+
+    .info-card h2 {
+      font-size: 1.16rem;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-card p.lead {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .food-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .food-item {
+      background: var(--bg-paper);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      padding: 13px;
+      transition: transform 0.22s var(--smooth);
+    }
+
+    .food-item:active {
+      transform: scale(0.985);
+    }
+
+    .food-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .food-item h3 {
+      font-size: 0.98rem;
+      color: var(--accent-terra-dark);
+    }
+
+    .badge-country {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: #FFF;
+      border: 1px solid var(--border-soft);
+    }
+
+    /* BUDGET & CONVERTISSEUR */
+    .converter-box {
+      background: linear-gradient(135deg, #FCEEE9 0%, #FDF6E4 100%);
+      border: 1px solid #F0D5C8;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 16px;
+      animation: cardCascade 0.4s var(--smooth) both;
+    }
+
+    .conv-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .input-group input, .expense-form input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border-soft);
+      font-size: 0.95rem;
+      font-family: inherit;
+      font-weight: 600;
+      background: #FFF;
+      color: var(--text-main);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-group input:focus, .expense-form input:focus {
+      outline: none;
+      border-color: var(--accent-terra);
+      box-shadow: 0 0 0 3px rgba(200, 90, 50, 0.14);
+    }
+
+    .budget-summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .metric-box {
+      background: var(--bg-paper);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      text-align: center;
+    }
+
+    .metric-box .val {
+      font-family: 'Fraunces', serif;
+      font-size: 1.35rem;
+      color: var(--accent-forest);
+      font-weight: 700;
+    }
+
+    .metric-box .lbl {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .expense-form {
+      display: grid;
+      grid-template-columns: 1.4fr 0.9fr auto;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .btn-primary {
+      background: var(--accent-terra);
+      color: #FFF;
+      border: none;
+      border-radius: 10px;
+      padding: 0 16px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: transform 0.2s var(--spring), background 0.2s;
+    }
+    .btn-primary:active {
+      transform: scale(0.93);
+    }
+
+    .expense-list {
+      margin-top: 14px;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .expense-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px dashed var(--border-soft);
+      font-size: 0.86rem;
+      animation: slideDown 0.25s var(--smooth) both;
+    }
+
+    .btn-del {
+      background: none;
+      border: none;
+      color: #B94A48;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 2px 6px;
+    }
+
+    /* BILLETS & PASS */
+    .ticket-card {
+      background: #FFF;
+      border: 1.5px solid var(--border-soft);
+      border-left: 5px solid var(--accent-forest);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 12px;
+      transition: transform 0.2s ease;
+    }
+
+    .ticket-route {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 0;
+      font-family: 'Fraunces', serif;
+      font-size: 1.15rem;
+    }
+
+    /* PARTICULES CONFETTIS QUAND ON COCHE UNE ÉTAPE */
+    .confetti-dot {
+      position: fixed;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      animation: popConfetti 0.7s ease-out forwards;
+    }
+
+    @keyframes popConfetti {
+      0% { transform: translate(0, 0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(0.2); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- EN-TÊTE CARNET DE VOYAGE -->
+  <header class="hero-header">
+    <div class="hero-badge">📓 Carnet de Voyage • 24 Oct – 1 Nov</div>
+    <h1>Riga & Stockholm</h1>
+    <p class="hero-subtitle">9 jours en amoureux entre Baltique et Scandinavie</p>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="globalProgressFill"></div>
+    </div>
+    <div class="progress-meta">
+      <span id="progressText">0 / 0 étapes complétées</span>
+      <span id="countdownText">Prêts à partir !</span>
+    </div>
+  </header>
+
+  <!-- MENU STICKY EN HAUT (PLUS RIEN EN BAS DE L'ÉCRAN !) -->
+  <nav class="top-sticky-nav">
+    <div class="nav-pills-wrap">
+      <button class="nav-btn active" onclick="switchTab('itineraire', this)">
+        <span class="ico">🗓️</span>
+        <span>Programme</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('gourmand', this)">
+        <span class="ico">🥐</span>
+        <span>Fika & Goûts</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('options', this)">
+        <span class="ico">✨</span>
+        <span>Options</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('infos', this)">
+        <span class="ico">🎫</span>
+        <span>Billets/Pass</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('budget', this)">
+        <span class="ico">💰</span>
+        <span>Budget</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ==========================================
+       ONGLET 1 : PROGRAMME JOUR PAR JOUR
+       ========================================== -->
+  <main id="tab-itineraire" class="tab-section active">
+    <div class="day-selector" id="daySelector"></div>
+    <div id="daysContainer"></div>
+  </main>
+
+  <!-- ==========================================
+       ONGLET 2 : SPÉCIALITÉS, FIKA & SOUVENIRS
+       ========================================== -->
+  <section id="tab-gourmand" class="tab-section">
+    <div class="info-card" style="animation-delay: 0.02s;">
+      <h2>🥐 Le Rituel Fika & Spécialités Suédoises</h2>
+      <p class="lead">À goûter absolument pendant vos 4 jours à Stockholm :</p>
+      <div class="food-grid">
+        <div class="food-item">
+          <div class="food-item-header">
+            <h3>Kanelbullar & Kardemummabullar</h3>
+            <span class="badge-country">🇸🇪 Pause Fika</span>
+          </div>
+          <p class="step-desc">Les célèbres <strong>Cinnamon Rolls</strong> (brioches roulées à la cannelle) et leur version encore plus parfumée à la cardamome fraîchement moulue. À déguster chauds avec un café filtre lors de la pause <em>fika</em>.</p>
+          <p class="step-desc"><strong>Où les goûter :</strong> <em>Fabrique Stenugnsbageri</em> (Gamla Stan / Södermalm), <em>Vete-Katten</em> (institution rétro à Norrmalm) ou <em>Café Saturnus</em> (brioches géantes).</p>
+        </div>
+
+        <div class="food-item">
+          <div class="food-item-header">
+            <h3>Köttbullar (Boulettes suédoises)</h3>
+            <span class="badge-country">🇸🇪 Plat culte</span>
+          </div>
+          <p class="step-desc">Les vraies boulettes de viande suédoises dorées au beurre, servies avec une purée onctueuse, une sauce crémeuse (gräddsås), des <strong>airelles rouges sauvages</strong> (lingon) et des concombres marinés.</p>
+          <p class="step-desc"><strong>Où les goûter :</strong> <em>Meatballs for the People</em> (Södermalm, ambiance super cool) ou <em>Pelikan</em> (grande brasserie historique).</p>
+        </div>
+
+        <div class="food-item">
+          <div class="food-item-header">
+            <h3>Gravlax (Saumon mariné à l'aneth)</h3>
+            <span class="badge-country">🇸🇪 Mer & Nord</span>
+          </div>
+          <p class="step-desc">Saumon cru longuement mariné dans du sel, du sucre, du poivre concassé et beaucoup d'aneth frais, servi avec sa sauce moutarde douce à l'aneth (<em>hovmästarsås</em>) et du pain noir ou des pommes de terre nouvelles.</p>
+          <p class="step-desc"><strong>Où le goûter :</strong> Au marché couvert <em>Östermalms Saluhall</em> ou chez <em>Kajsas Fisk</em> (Hötorgshallen, beaucoup plus abordable à midi !).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card" style="animation-delay: 0.1s;">
+      <h2>🇱🇻 Spécialités Lettones à Riga</h2>
+      <p class="lead">Les incontournables du Marché Central et des caves de Vecrīga :</p>
+      <div class="food-grid">
+        <div class="food-item">
+          <div class="food-item-header">
+            <h3>Rīgas Melnais Balzams (Baume Noir)</h3>
+            <span class="badge-country">🇱🇻 Élixir 1752</span>
+          </div>
+          <p class="step-desc">Liqueur traditionnelle à base de 24 plantes, fleurs, racines et baies. Goûtez la version <strong>Black Balsam Currant</strong> (au cassis, beaucoup plus douce) ou en cocktail chaud dans les caves de la vieille ville.</p>
+        </div>
+        <div class="food-item">
+          <div class="food-item-header">
+            <h3>Rupjmaize, Poissons fumés & Piragi</h3>
+            <span class="badge-country">🇱🇻 Marché Central</span>
+          </div>
+          <p class="step-desc">Petits chaussons briochés au lard et à l'oignon (<em>Speķa pīrāgi</em>), pain de seigle noir dense, fromage letton aux graines de cumin (<em>Jāņu siers</em>) et poissons fumés sous le hangar aux poissons.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card" style="animation-delay: 0.18s;">
+      <h2>🎁 Idées Souvenirs à rapporter</h2>
+      <div class="food-grid">
+        <div class="food-item">
+          <h3>🇸🇪 Souvenirs Fika & Cinnamon de Suède</h3>
+          <p class="step-desc">• <strong>Kit Fika gourmand :</strong> Sachets de cannelle et de cardamome en grains, sucre perlé suédois (<em>pärlsocker</em>) et café moulu suédois (<em>Johan & Nyström</em> ou <em>Arvid Nordquist</em>).<br>
+          • <strong>Cinnamon Buns à emporter le vendredi :</strong> Achète une boîte de vrais <em>kanelbullar</em> chez Fabrique juste avant de partir à Arlanda !<br>
+          • <strong>Objet culte :</strong> Un petit cheval de Dalécarlie en bois peint à la main (<em>Dalahäst</em>) ou une boîte de biscuits suédois au gingembre (<em>Pepparkakor</em>).</p>
+        </div>
+        <div class="food-item">
+          <h3>🇱🇻 Souvenirs de Riga</h3>
+          <p class="step-desc">• Une bouteille en céramique de <strong>Baume Noir de Riga</strong> (superbe flacon en grès).<br>
+          • Chocolats artisanaux de la maison historique <strong>Laima</strong> (quartier Miera iela).<br>
+          • Écharpe ou gants en laine à motifs baltes traditionnels.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       ONGLET 3 : OPTIONS & CONSEILS (SPA, SKYLINE, CITYBEE)
+       ========================================== -->
+  <section id="tab-options" class="tab-section">
+    <div class="info-card" style="animation-delay: 0.02s;">
+      <h2>✨ Options Détente & Vue à Riga</h2>
+      <p class="lead">En réserve selon votre humeur et la météo sur place :</p>
+      <div class="food-grid">
+        <div class="food-item">
+          <div class="food-item-header">
+            <h3>🍹 Option 1 : Verre au Skyline Bar (26e étage)</h3>
+            <span class="badge-country">Entrée gratuite</span>
+          </div>
+          <p class="step-desc">Situé au sommet de l'hôtel <em>Radisson Blu Latvija</em> (Elizabetes iela 55). Vue spectaculaire à travers les immenses baies vitrées sur toute la ville illuminée. Comptez ~12 € à 14 € le cocktail (soit ~26 € à deux).</p>
+          <a class="btn-map" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Skyline+Bar+Riga">📍 Ouvrir dans Google Maps</a>
+        </div>
+
+        <div class="food-item">
+          <div class="food-item-header">
+            <h3>🧖‍♀️ Option 2 : Séance Spa & Saunas en amoureux</h3>
+            <span class="badge-country">50 € à 90 € / 2 pers.</span>
+          </div>
+          <p class="step-desc">Parfait s'il pleut ou s'il fait frais en fin d'après-midi :<br>
+          • <strong>Wellton Centrum Spa</strong> (en pleine vieille ville) ou <strong>Joker Klubs</strong> : ~25 € / pers. pour 2h de piscine chaude, jacuzzi, hammam et saunas.<br>
+          • <strong>ESPA Riga</strong> (5 étoiles) : ~45 € / pers. avec sa piscine extérieure chauffée et son grand sauna panoramique.</p>
+          <a class="btn-map" target="_blank" href="https://www.google.com/maps/search/?api=1&query=ESPA+Riga">📍 Voir ESPA Riga sur Maps</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card" style="animation-delay: 0.1s;">
+      <h2>🚗 Options Road Trips en CityBee (Si vous avez le temps)</h2>
+      <p class="lead">À faire le samedi 31 oct. ou le dimanche 1er nov. si vous avez envie de rouler :</p>
+      <div class="food-grid">
+        <div class="food-item">
+          <div class="food-item-header">
+            <h3>🏰 Option A : Château de Rundāle & Bauska</h3>
+            <span class="badge-country">~155 km A/R (Sud)</span>
+          </div>
+          <p class="step-desc">• <strong>Temps de route :</strong> 1h10 vers le sud depuis Riga.<br>
+          • <strong>Château de Rundāle (10h-18h) :</strong> Le « Versailles balte » et ses salons dorés. Billet combiné Palais + Jardin : 10,50 € étudiant / 17 € adulte.<br>
+          • <strong>Château de Bauska (à 15 min) :</strong> Ruines médiévales au confluent de deux rivières (4 € à 11 €).<br>
+          • <strong>Budget CityBee :</strong> ~55 € à 60 € la journée (essence incluse).</p>
+          <div class="step-actions" style="margin-top:8px;">
+            <a class="btn-map" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Rundale+Palace">📍 GPS Rundāle</a>
+            <a class="btn-map" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Bauska+Castle">📍 GPS Bauska</a>
+          </div>
+        </div>
+
+        <div class="food-item">
+          <div class="food-item-header">
+            <h3>🌊 Option B : Kuldīga & Cascade Ventas Rumba</h3>
+            <span class="badge-country">~300 km A/R (Ouest)</span>
+          </div>
+          <p class="step-desc">• <strong>Temps de route :</strong> 1h55 vers l'ouest.<br>
+          • <strong>À voir (100 % gratuit) :</strong> La cascade naturelle la plus large d'Europe (240 m de large), le vieux pont en briques rouges de 1874 et les ruelles en bois classées à l'UNESCO.<br>
+          • <strong>Astuce :</strong> S'arrêter à Jūrmala sur la route du retour.<br>
+          • <strong>Budget CityBee :</strong> ~75 € à 80 € (prendre un forfait journalier kilométrique dans l'appli).</p>
+          <a class="btn-map" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Ventas+Rumba+Kuldiga">📍 GPS Cascade Kuldīga</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       ONGLET 4 : BILLETS, CARTES DE TRANSPORT & HÔTEL
+       ========================================== -->
+  <section id="tab-infos" class="tab-section">
+    <div class="info-card" style="animation-delay: 0.02s;">
+      <h2>🎫 Conseils Cartes de Transport dès l'arrivée</h2>
+      <div class="food-grid">
+        <div class="food-item">
+          <h3>🇱🇻 À Riga : E-talons ou Appli Mobilly</h3>
+          <p class="step-desc">• <strong>Dès l'aéroport de Riga (RIX) :</strong> Pour prendre le <strong>Bus 22</strong> vers le centre, n'achète pas au chauffeur. Prends une carte jaune rechargeable <strong>E-talons</strong> au distributeur de l'arrêt ou utilise l'application <strong>Mobilly</strong>.<br>
+          • <strong>Tarifs :</strong> Ticket 90 min = <strong>1,50 €</strong> | Pass 24h = <strong>5 €</strong> | Pass 3 jours = <strong>8 €</strong>.<br>
+          • <strong>Train pour Jūrmala (arrêt Majori) :</strong> 30 min depuis la gare centrale de Riga, ~2 € l'aller par personne.</p>
+        </div>
+
+        <div class="food-item">
+          <h3>🇸🇪 À Stockholm : Application SL & Trajet Arlanda (22 €)</h3>
+          <p class="step-desc">• <strong>Astuce Budget Arlanda → Hôtel (22 € pour deux) :</strong> Télécharge l'application officielle <strong>SL (Storstockholms Lokaltrafik)</strong>. Pour éviter le supplément aéroport coûteux du train direct, prends le <strong>bus 583</strong> devant le terminal jusqu'à la gare de <strong>Märsta</strong> (15 min), puis le train de banlieue <strong>Pendeltåg</strong> direction centre : ça passe sur un ticket SL normal !<br>
+          • <strong>Sur place (Scandic Alvik ↔ Centre) :</strong> Prends dans l'appli SL un <strong>Pass 72 heures</strong>. Il inclut tous les métros, tramways, bus et le <strong>ferry urbain ligne 82</strong> vers le Musée Vasa !</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card" style="animation-delay: 0.1s;">
+      <h2>✈️ Vos Vols Ryanair & Hôtel Réservés</h2>
+      <div class="ticket-card">
+        <div style="font-size:0.75rem; font-weight:700; color:var(--accent-terra);">ALLER • MARDI 27 OCTOBRE 2026</div>
+        <div class="ticket-route">
+          <span>RIX 09:55</span>
+          <span>✈️ 1h15</span>
+          <span>ARN 10:10</span>
+        </div>
+        <div style="font-size:0.8rem; color:var(--text-muted);">Vol direct <strong>Ryanair FR4641</strong> • Petit sac cabine sous le siège inclus.</div>
+      </div>
+
+      <div class="ticket-card">
+        <div style="font-size:0.75rem; font-weight:700; color:var(--accent-terra);">RETOUR • VENDREDI 30 OCTOBRE 2026</div>
+        <div class="ticket-route">
+          <span>ARN 20:15</span>
+          <span>✈️ 1h05</span>
+          <span>RIX 22:20</span>
+        </div>
+        <div style="font-size:0.8rem; color:var(--text-muted);">Vol direct <strong>Ryanair FR4642</strong> (opéré par Buzz) • Total payé : <strong>74 € pour 2</strong>.</div>
+      </div>
+
+      <div class="ticket-card" style="border-left-color: var(--accent-gold);">
+        <div style="font-size:0.75rem; font-weight:700; color:#9A6B15;">HÔTEL STOCKHOLM • 3 NUITS (27 AU 30 OCT.)</div>
+        <h3 style="margin:4px 0;">Scandic Alvik</h3>
+        <p class="step-desc">📍 Gustavslundsvägen 153, Bromma (Station Métro ligne verte & Tram : <strong>Alvik</strong> à 200 m).<br>
+        ☕ <strong>Petit-déjeuner buffet « Superbe » compris</strong> les mercredi, jeudi et vendredi matins !<br>
+        💳 Total : <strong>329 € pour 2 adultes</strong> (Taxes comprises).</p>
+        <a class="btn-map" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Scandic+Alvik+Stockholm">📍 Itinéraire vers Scandic Alvik</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================
+       ONGLET 5 : BUDGET & CONVERTISSEUR SEK / EUR
+       ========================================== -->
+  <section id="tab-budget" class="tab-section">
+    <div class="converter-box">
+      <h2 style="font-size:1.05rem;">💱 Convertisseur Rapide Suède (SEK ⇄ EUR)</h2>
+      <p style="font-size:0.78rem; color:var(--text-muted);">Taux moyen : 1 € ≈ 11,40 SEK (100 SEK ≈ 8,75 €)</p>
+      <div class="conv-row">
+        <div class="input-group">
+          <label>Couronnes (SEK)</label>
+          <input type="number" id="sekInput" placeholder="100" value="100" oninput="convertFromSek()" />
+        </div>
+        <div style="font-weight:700; padding-top:16px;">⇄</div>
+        <div class="input-group">
+          <label>Euros (€)</label>
+          <input type="number" id="eurInput" placeholder="8.77" value="8.77" oninput="convertFromEur()" />
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <h2>💰 Suivi du Budget pour Deux</h2>
+      <p class="lead">Budget total de base estimé (sans options voiture/spa) : <strong>~980 € à 1 100 € pour 2</strong></p>
+
+      <div class="budget-summary-grid">
+        <div class="metric-box">
+          <div class="val" id="fixedTotalVal">403 €</div>
+          <div class="lbl">Réservé (Vols 74€ + Hôtel 329€)</div>
+        </div>
+        <div class="metric-box">
+          <div class="val" id="spentOnSiteVal">0 €</div>
+          <div class="lbl">Dépensé sur place (ajouté ci-dessous)</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:0.92rem; margin-bottom:6px;">Ajouter une dépense sur place (en €) :</h3>
+      <div class="expense-form">
+        <input type="text" id="expTitle" placeholder="Ex: Fika, Tram, Resto..." />
+        <input type="number" id="expAmount" placeholder="Montant €" step="0.5" />
+        <button class="btn-primary" onclick="addExpense()">+ Ajouter</button>
+      </div>
+
+      <div class="expense-list" id="expenseList"></div>
+    </div>
+  </section>
+
+  <script>
+    // ==========================================
+    // DONNÉES COMPLÈTES DU PROGRAMME (9 JOURS)
+    // ==========================================
+    const itineraryData = [
+      {
+        id: "j1",
+        shortLabel: "Sam 24",
+        subLabel: "Riga",
+        tag: "🇱🇻 Riga • Jour 1",
+        tagClass: "tag-riga",
+        title: "Samedi 24 oct. — Arrivée & Vieille Ville (Vecrīga)",
+        tip: "🎫 Conseil dès l'arrivée : À l'aéroport de Riga, prenez une carte rechargeable E-talons au distributeur de l'arrêt (ou installez l'appli Mobilly) pour monter dans le Bus 22 (1,50 € le trajet ou Pass 3 jours à 8 €).",
+        steps: [
+          {
+            id: "j1_s1",
+            time: "Arrivée",
+            title: "Carte de transport & Installation au logement",
+            desc: "Achat du pass transport Rīgas Satiksme (E-talons / Mobilly), trajet en Bus 22 vers le centre et dépôt des valises.",
+            price: "3 € à 16 € / 2",
+            mapQuery: "Riga+International+Airport"
+          },
+          {
+            id: "j1_s2",
+            time: "Après-midi",
+            title: "Flânerie dans les ruelles pavées de Vecrīga",
+            desc: "Découverte à pied des Trois Frères (les plus vieilles maisons médiévales), de la Cathédrale du Dôme, de la Place des Livoniens et de la Tour Poudrière.",
+            price: "Gratuit",
+            mapQuery: "Three+Brothers+Riga"
+          },
+          {
+            id: "j1_s3",
+            time: "16h00",
+            title: "Visite de la Maison des Têtes Noires",
+            desc: "Chef-d'œuvre gothique et baroque sur la place de l'Hôtel de Ville, avec ses caves médiévales et ses grands salons d'apparat.",
+            price: "10 € à 14 € / 2",
+            mapQuery: "House+of+the+Blackheads+Riga"
+          },
+          {
+            id: "j1_s4",
+            time: "17h30",
+            title: "Coucher de soleil au clocher de l'Église Saint-Pierre",
+            desc: "Montée en ascenseur à 72 m de hauteur pour admirer le panorama à 360° sur les toits rouges de la vieille ville et le fleuve Daugava.",
+            price: "14 € à 18 € / 2",
+            mapQuery: "St+Peters+Church+Riga"
+          },
+          {
+            id: "j1_s5",
+            time: "Soirée",
+            title: "Dîner médiéval & Baume Noir en cave voûtée",
+            desc: "Premier dîner chaleureux en amoureux (ex: Folkklubs Ala Pagrabs ou Rozengrāls) et dégustation du célèbre Baume Noir au cassis.",
+            price: "~45 € / 2",
+            mapQuery: "Folkklubs+ALA+pagrabs+Riga"
+          }
+        ]
+      },
+      {
+        id: "j2",
+        shortLabel: "Dim 25",
+        subLabel: "Riga",
+        tag: "🇱🇻 Riga • Jour 2",
+        tagClass: "tag-riga",
+        title: "Dimanche 25 oct. — Art Nouveau & Quartier Créatif",
+        tip: "⏰ Passage à l'heure d'hiver cette nuit ! Le Musée de l'Art Nouveau est ouvert le dimanche (10h-18h) mais fermé le lundi : c'est le jour parfait.",
+        steps: [
+          {
+            id: "j2_s1",
+            time: "10h00",
+            title: "Balade d'automne le long du canal (Parc Bastejkalns)",
+            desc: "Promenade romantique sous les arbres dorés le long du canal central, pont des amoureux et Opéra National.",
+            price: "Gratuit",
+            mapQuery: "Bastejkalna+parks+Riga"
+          },
+          {
+            id: "j2_s2",
+            time: "11h00",
+            title: "Rue Alberta iela & Musée de l'Art Nouveau",
+            desc: "Admirez les façades sculptées d'Alberta iela et Elizabetes iela, puis entrez au n°12 pour voir le célèbre escalier hélicoïdal et l'appartement 1900.",
+            price: "10 € à 18 € / 2",
+            mapQuery: "Riga+Art+Nouveau+Center"
+          },
+          {
+            id: "j2_s3",
+            time: "13h00",
+            title: "Pause déjeuner dans le « Centre Calme »",
+            desc: "Déjeuner ou brunch cosy dans l'un des cafés élégants du quartier des ambassades.",
+            price: "~30 € / 2",
+            mapQuery: "Alberta+iela+Riga"
+          },
+          {
+            id: "j2_s4",
+            time: "15h00",
+            title: "Musée National des Beaux-Arts de Lettonie",
+            desc: "Superbe édifice historique rénové avec ses toitures vitrées panoramiques et ses grandes collections baltes.",
+            price: "6 € à 12 € / 2",
+            mapQuery: "Latvian+National+Museum+of+Art"
+          },
+          {
+            id: "j2_s5",
+            time: "Soirée",
+            title: "Quartier bohème de Miera iela",
+            desc: "Balade dans la « rue de la Paix » : chocolaterie historique Laima, petits cafés alternatifs, brasseries artisanales (Labietis) et dîner.",
+            price: "~40 € / 2",
+            mapQuery: "Miera+iela+Riga"
+          }
+        ]
+      },
+      {
+        id: "j3",
+        shortLabel: "Lun 26",
+        subLabel: "Riga",
+        tag: "🇱🇻 Riga • Jour 3",
+        tagClass: "tag-riga",
+        title: "Lundi 26 oct. — Marchés Gourmands, Panorama & Rive Gauche",
+        tip: "💡 Envie d'un Spa ou d'un verre au 26e étage ce soir ? Regarde l'onglet « Options » en haut de l'écran !",
+        steps: [
+          {
+            id: "j3_s1",
+            time: "10h30",
+            title: "Marché Central de Riga (Hangars à dirigeables)",
+            desc: "Exploration des 5 immenses pavillons classés à l'UNESCO et déjeuner sur le pouce (poissons fumés, piragi au lard, fromages au cumin).",
+            price: "~25 € / 2",
+            mapQuery: "Riga+Central+Market"
+          },
+          {
+            id: "j3_s2",
+            time: "13h30",
+            title: "Belvédère de l'Académie des Sciences (Panorama Riga)",
+            desc: "Montée au 17e étage de ce gratte-ciel de style rétro-soviétique pour une vue en plein air à 360° sur tout Riga.",
+            price: "16 € / 2",
+            mapQuery: "Panorama+Riga+Academy+of+Sciences"
+          },
+          {
+            id: "j3_s3",
+            time: "15h30",
+            title: "Maisons en bois de Kalnciema & Marché d'Āgenskalns",
+            desc: "Traversée du fleuve en tramway vers la rive gauche : architecture en bois du XIXe siècle à Kalnciema, puis halle rénovée d'Āgenskalns (super étage street-food et bars à l'étage).",
+            price: "~35 € / 2",
+            mapQuery: "Agenskalna+tirgus+Riga"
+          }
+        ]
+      },
+      {
+        id: "j4",
+        shortLabel: "Mar 27",
+        subLabel: "Stockholm",
+        tag: "🇸🇪 Stockholm • Jour 4",
+        tagClass: "tag-stockholm",
+        title: "Mardi 27 oct. — Vol, Gamla Stan, Kanelbullar & Monteliusvägen",
+        tip: "🎫 Dès l'arrivée à Arlanda (10h10) : Prenez votre pass ou vos billets dans l'application SL (trajet Arlanda ↔ Alvik via bus 583 Märsta + train Pendeltåg = ~22 € A/R pour deux).",
+        steps: [
+          {
+            id: "j4_s1",
+            time: "09h55 → 10h10",
+            title: "Vol Ryanair FR4641 & Trajet vers Scandic Alvik",
+            desc: "Décollage de Riga à 09h55, arrivée à Stockholm Arlanda à 10h10 (heure locale). Prise de la carte/appli SL et dépôt des sacs au Scandic Alvik.",
+            price: "Vols déjà payés + SL",
+            mapQuery: "Scandic+Alvik+Stockholm"
+          },
+          {
+            id: "j4_s2",
+            time: "13h00",
+            title: "Vieille ville de Gamla Stan & Premier Fika (Cinnamon Rolls)",
+            desc: "Flânerie sur la place colorée Stortorget, la ruelle la plus étroite (Mårten Trotzigs Gränd, 90 cm de large) et premier Fika avec un Kanelbulle chaud à la cannelle !",
+            price: "~18 € / 2",
+            mapQuery: "Stortorget+Gamla+Stan+Stockholm"
+          },
+          {
+            id: "j4_s3",
+            time: "16h00",
+            title: "Corniche panoramique de Monteliusvägen (Södermalm)",
+            desc: "Sentier en balcon au-dessus de l'eau offrant la plus belle vue carte postale sur l'Hôtel de Ville en briques et les clochers de Gamla Stan au crépuscule.",
+            price: "Gratuit",
+            mapQuery: "Monteliusvagen+Stockholm"
+          },
+          {
+            id: "j4_s4",
+            time: "Soirée",
+            title: "Dîner de vraies Köttbullar (Boulettes suédoises)",
+            desc: "Dégustation des fameuses boulettes de viande suédoises avec purée, sauce crème et airelles rouges dans le quartier de Södermalm.",
+            price: "~45 € / 2",
+            mapQuery: "Meatballs+for+the+People+Stockholm"
+          }
+        ]
+      },
+      {
+        id: "j5",
+        shortLabel: "Mer 28",
+        subLabel: "Stockholm",
+        tag: "🇸🇪 Stockholm • Jour 5",
+        tagClass: "tag-stockholm",
+        title: "Mercredi 28 oct. — Relève de la Garde, Ferry & Musée Vasa",
+        tip: "👑 La Relève de la Garde au Palais Royal a lieu à 12h15 en semaine (mercredi, jeudi, vendredi). Arrivez vers 11h55 dans la cour extérieure !",
+        steps: [
+          {
+            id: "j5_s1",
+            time: "08h30",
+            title: "Grand Petit-Déjeuner Buffet au Scandic Alvik",
+            desc: "Profitez à fond du petit-déjeuner « Superbe » inclus dans votre réservation pour faire le plein d'énergie avant de partir.",
+            price: "Inclus (0 €)",
+            mapQuery: "Scandic+Alvik+Stockholm"
+          },
+          {
+            id: "j5_s2",
+            time: "12h00",
+            title: "Relève de la Garde Royale au Palais Royal (Kungliga Slottet)",
+            desc: "Spectacle traditionnel dans la cour extérieure du Palais Royal à Gamla Stan à 12h15 précises.",
+            price: "Gratuit",
+            mapQuery: "The+Royal+Palace+Stockholm"
+          },
+          {
+            id: "j5_s3",
+            time: "13h30",
+            title: "Traversée en Ferry SL (Ligne 82) vers l'île de Djurgården",
+            desc: "Embarquez à Slussen sur le bateau-bus urbain (inclus dans la carte SL) pour une mini-croisière de 10 min face aux quais.",
+            price: "Inclus carte SL",
+            mapQuery: "Slussen+ferry+terminal+Stockholm"
+          },
+          {
+            id: "j5_s4",
+            time: "14h00 – 16h30",
+            title: "Visite de l'incroyable Musée Vasa",
+            desc: "Face-à-face impressionnant avec l'unique navire de guerre du XVIIe siècle (1628) conservé à 98 % au monde, orné de centaines de sculptures.",
+            price: "~34 € / 2",
+            mapQuery: "Vasa+Museum+Stockholm"
+          },
+          {
+            id: "j5_s5",
+            time: "Fin d'après-midi & Soir",
+            title: "Promenade à Djurgården & Soirée dans le quartier SoFo",
+            desc: "Marche le long de l'eau au retour, puis soirée dans les rues animées de SoFo (au sud de Folkungagatan à Södermalm).",
+            price: "~40 € / 2",
+            mapQuery: "Nytorget+Stockholm"
+          }
+        ]
+      },
+      {
+        id: "j6",
+        shortLabel: "Jeu 29",
+        subLabel: "Stockholm",
+        tag: "🇸🇪 Stockholm • Jour 6",
+        tagClass: "tag-stockholm",
+        title: "Jeudi 29 oct. — Gravlax, Îlot de Kastellet & Métro d'Art",
+        tip: "🏰 Ne manquez pas Kastellet tout au bout de l'île de Skeppsholmen : cette petite citadelle en briques rouges perchée sur son rocher offre une vue magique sur la mer et Gamla Stan !",
+        steps: [
+          {
+            id: "j6_s1",
+            time: "Matin",
+            title: "Petit-déjeuner au Scandic Alvik & Quartier d'Östermalm",
+            desc: "Après le buffet de l'hôtel, balade le long de la promenade maritime de Strandvägen bordée de voiliers et d'immeubles haussmanniens nordiques.",
+            price: "Inclus (0 €)",
+            mapQuery: "Strandvagen+Stockholm"
+          },
+          {
+            id: "j6_s2",
+            time: "12h00",
+            title: "Dégustation de Gravlax (Östermalms Saluhall ou Hötorgshallen)",
+            desc: "Goûtez au véritable saumon mariné à l'aneth (Gravlax) et à la soupe de poisson suédoise sous les halles historiques en briques rouges.",
+            price: "~35 € / 2",
+            mapQuery: "Ostermalms+Saluhall+Stockholm"
+          },
+          {
+            id: "j6_s3",
+            time: "14h30",
+            title: "Pont à la Couronne Dorée, Skeppsholmen & Citadelle de Kastellet",
+            desc: "Traversez le célèbre pont Skeppsholmsbron (photo culte avec la couronne dorée), parcourez l'île verdoyante de Skeppsholmen puis grimpez jusqu'au petit fort de Kastellet sur l'îlot de Kastellholmen.",
+            price: "Gratuit",
+            mapQuery: "Kastellet+Stockholm"
+          },
+          {
+            id: "j6_s4",
+            time: "17h00",
+            title: "Safari dans les stations de métro troglodytes peintes",
+            desc: "Avec votre carte SL, explorez la plus longue galerie d'art souterraine du monde : T-Centralen (feuilles bleues), Kungsträdgården, Rådhuset (grotte ocre) et Stadion (arc-en-ciel).",
+            price: "Inclus carte SL",
+            mapQuery: "T-Centralen+tunnelbana+Stockholm"
+          }
+        ]
+      },
+      {
+        id: "j7",
+        shortLabel: "Ven 30",
+        subLabel: "Vol Retour",
+        tag: "🇸🇪➔🇱🇻 Stockholm & Retour • Jour 7",
+        tagClass: "tag-stockholm",
+        title: "Vendredi 30 oct. — Stadshuset, Souvenirs Fika & Vol Retour",
+        tip: "🎁 C'est le moment d'acheter vos souvenirs Fika & Cinnamon (cardamome, cannelle, café et boîte de Kanelbullar frais) avant de filer à Arlanda vers 17h15.",
+        steps: [
+          {
+            id: "j7_s1",
+            time: "Matin",
+            title: "Dernier petit-déjeuner à l'hôtel & Jardins de l'Hôtel de Ville",
+            desc: "Check-out (laissez vos sacs en consigne) et balade sous les arcades au bord de l'eau du célèbre Hôtel de Ville (Stadshuset, où a lieu le banquet des prix Nobel).",
+            price: "Gratuit (ext.)",
+            mapQuery: "Stockholm+City+Hall"
+          },
+          {
+            id: "j7_s2",
+            time: "Midi & Après-midi",
+            title: "Shopping Souvenirs Fika / Cinnamon & Dernier Fika en amoureux",
+            desc: "Balade dans Norrmalm / Drottninggatan, achat des épices à Fika, du café suédois et des roulés à la cannelle chez Fabrique ou Vete-Katten.",
+            price: "~25 € / 2",
+            mapQuery: "Vete-Katten+Stockholm"
+          },
+          {
+            id: "j7_s3",
+            time: "17h15 → 22h20",
+            title: "Trajet vers Arlanda & Vol Retour Ryanair FR4642 (20h15)",
+            desc: "Départ en train SL vers Arlanda, décollage à 20h15 et atterrissage à Riga à 22h20. Retour au logement en Bus 22 ou Bolt.",
+            price: "Vol déjà payé",
+            mapQuery: "Stockholm+Arlanda+Airport"
+          }
+        ]
+      },
+      {
+        id: "j8",
+        shortLabel: "Sam 31",
+        subLabel: "Jūrmala",
+        tag: "🌊 Côte Balte • Jour 8",
+        tagClass: "tag-riga",
+        title: "Samedi 31 oct. — Plage, Pins & Villas en Bois à Jūrmala",
+        tip: "🚗 Si vous préférez faire l'option Château de Rundāle ou Kuldīga en voiture CityBee ce jour-là, tous les itinéraires GPS sont prêts dans l'onglet « Options » !",
+        steps: [
+          {
+            id: "j8_s1",
+            time: "10h30",
+            title: "Train direct depuis la Gare Centrale de Riga vers Majori",
+            desc: "30 minutes de train pittoresque (direction Tukums/Dubulti, arrêt Majori) pour rejoindre le bord de mer sans stress.",
+            price: "~8 € A/R pour 2",
+            mapQuery: "Majori+station+Jurmala"
+          },
+          {
+            id: "j8_s2",
+            time: "11h15",
+            title: "Grande marche sur la plage de sable blanc & Villas en bois",
+            desc: "Promenade vivifiante au bord de la mer Baltique bordée de pins centenaires, puis exploration des ruelles abritant de superbes maisons Art Nouveau en bois sculpté.",
+            price: "Gratuit",
+            mapQuery: "Majori+Beach+Jurmala"
+          },
+          {
+            id: "j8_s3",
+            time: "14h30",
+            title: "Tour d'observation dans la canopée (Parc forestier de Dzintari)",
+            desc: "Montée gratuite au sommet de la grande tour d'architecte de 33,5 m au-dessus de la forêt de pins pour voir la mer et toute la côte.",
+            price: "Gratuit",
+            mapQuery: "Dzintari+Forest+Park+Jurmala"
+          },
+          {
+            id: "j8_s4",
+            time: "Fin d'après-midi & Soir",
+            title: "Rue piétonne Jomas iela & Dîner d'Halloween à Riga",
+            desc: "Pause chocolat chaud sur Jomas iela avant de reprendre le train vers Riga pour votre dernière soirée du samedi.",
+            price: "~45 € / 2",
+            mapQuery: "Jomas+iela+Jurmala"
+          }
+        ]
+      },
+      {
+        id: "j9",
+        shortLabel: "Dim 1",
+        subLabel: "Chill",
+        tag: "☕ Journée Chill • Jour 9",
+        tagClass: "tag-chill",
+        title: "Dimanche 1er nov. — Journée 100 % Chill, Ķīpsala & Brunch",
+        tip: "🧘‍♂️ Zéro réveil, zéro course aujourd'hui : on profite tranquillement à deux avant la fin du séjour.",
+        steps: [
+          {
+            id: "j9_s1",
+            time: "Matinée",
+            title: "Grasse matinée & Brunch lent en amoureux",
+            desc: "Réveil en douceur et grand brunch chaud dans l'un des meilleurs cafés de Riga (ex: Rocket Bean Roastery, MiiT Coffee ou This Place Doesn't Need A Name).",
+            price: "~30 € / 2",
+            mapQuery: "Rocket+Bean+Roastery+Riga"
+          },
+          {
+            id: "j9_s2",
+            time: "Après-midi",
+            title: "Balade calme au bord de l'eau sur l'île de Ķīpsala",
+            desc: "Traversez le pont à pied pour flâner sur la petite rue pavée Balasta dambis : anciennes maisons de pêcheurs en bois restaurées et vue carte postale sur les clochers de Riga.",
+            price: "Gratuit",
+            mapQuery: "Balasta+dambis+Kipsala+Riga"
+          },
+          {
+            id: "j9_s3",
+            time: "Fin de journée",
+            title: "Dernier café chaud & Souvenirs (Baume Noir / Chocolats)",
+            desc: "Derniers achats tranquilles en centre-ville et fin du voyage en douceur.",
+            price: "Selon envies",
+            mapQuery: "Vecriga+Riga"
+          }
+        ]
+      }
+    ];
+
+    // ==========================================
+    // GESTION DE L'ÉTAT (LOCALSTORAGE)
+    // ==========================================
+    const STORAGE_CHECKS = "voyage_riga_stockholm_checks_v1";
+    const STORAGE_EXPENSES = "voyage_riga_stockholm_expenses_v1";
+
+    let checkedSteps = JSON.parse(localStorage.getItem(STORAGE_CHECKS) || "{}");
+    let customExpenses = JSON.parse(localStorage.getItem(STORAGE_EXPENSES) || "[]");
+    let currentDayFilter = "all";
+
+    function initApp() {
+      renderDaySelector();
+      renderDays();
+      updateGlobalProgress();
+      renderExpenses();
+      updateCountdown();
+    }
+
+    function updateCountdown() {
+      const tripStart = new Date("2026-10-24T08:00:00");
+      const now = new Date();
+      const diffDays = Math.ceil((tripStart - now) / (1000 * 60 * 60 * 24));
+      const el = document.getElementById("countdownText");
+      if (diffDays > 0) {
+        el.textContent = `Départ dans ${diffDays} jour${diffDays > 1 ? "s" : ""} ✈️`;
+      } else if (diffDays >= -9) {
+        el.textContent = "Bon voyage à tous les deux ! ❤️";
+      } else {
+        el.textContent = "Carnet souvenir • Octobre 2026";
+      }
+    }
+
+    function renderDaySelector() {
+      const container = document.getElementById("daySelector");
+      let html = `
+        <button class="day-pill ${currentDayFilter === 'all' ? 'active' : ''}" onclick="filterDay('all')">
+          Tous les jours
+          <span class="sub">24 oct – 1 nov</span>
+        </button>
+      `;
+      itineraryData.forEach(d => {
+        html += `
+          <button class="day-pill ${currentDayFilter === d.id ? 'active' : ''}" onclick="filterDay('${d.id}')">
+            ${d.shortLabel}
+            <span class="sub">${d.subLabel}</span>
+          </button>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function filterDay(dayId) {
+      currentDayFilter = dayId;
+      renderDaySelector();
+      renderDays();
+    }
+
+    function renderDays() {
+      const container = document.getElementById("daysContainer");
+      const filtered = currentDayFilter === "all"
+        ? itineraryData
+        : itineraryData.filter(d => d.id === currentDayFilter);
+
+      container.innerHTML = filtered.map((day, index) => {
+        const stepsHtml = day.steps.map(s => {
+          const isDone = !!checkedSteps[s.id];
+          return `
+            <div class="step-item ${isDone ? 'done' : ''}" id="row_${s.id}">
+              <input type="checkbox" class="step-checkbox" ${isDone ? 'checked' : ''} onchange="toggleStep('${s.id}', this)" />
+              <div class="step-content">
+                <div class="step-top">
+                  <span class="step-time">${s.time}</span>
+                  <span class="step-price">${s.price}</span>
+                </div>
+                <div class="step-title">${s.title}</div>
+                <div class="step-desc">${s.desc}</div>
+                <div class="step-actions">
+                  <a class="btn-map" target="_blank" href="https://www.google.com/maps/search/?api=1&query=${s.mapQuery}">
+                    📍 Itinéraire Maps
+                  </a>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        return `
+          <article class="day-card" style="animation-delay: ${Math.min(index * 0.06, 0.5)}s;">
+            <div class="day-card-header">
+              <div>
+                <span class="day-tag ${day.tagClass}">${day.tag}</span>
+                <h2 class="day-title">${day.title}</h2>
+              </div>
+            </div>
+            ${day.tip ? `<div class="day-tip-box">${day.tip}</div>` : ""}
+            <div class="steps-list">
+              ${stepsHtml}
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function toggleStep(stepId, checkboxEl) {
+      checkedSteps[stepId] = !checkedSteps[stepId];
+      localStorage.setItem(STORAGE_CHECKS, JSON.stringify(checkedSteps));
+      const row = document.getElementById("row_" + stepId);
+      if (row) row.classList.toggle("done", checkedSteps[stepId]);
+      if (checkedSteps[stepId] && checkboxEl) launchConfetti(checkboxEl);
+      updateGlobalProgress();
+    }
+
+    // PETITE EXPLOSION DE CONFETTIS AUTOUR DE LA CASE COCHÉE
+    function launchConfetti(el) {
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const colors = ["#C85A32", "#2D5A4C", "#D49B35", "#F4B961", "#A3421F"];
+      for (let i = 0; i < 14; i++) {
+        const dot = document.createElement("span");
+        dot.className = "confetti-dot";
+        const angle = (Math.PI * 2 * i) / 14;
+        const dist = 28 + Math.random() * 26;
+        dot.style.left = cx + "px";
+        dot.style.top = cy + "px";
+        dot.style.background = colors[i % colors.length];
+        dot.style.setProperty("--tx", Math.cos(angle) * dist + "px");
+        dot.style.setProperty("--ty", Math.sin(angle) * dist + "px");
+        document.body.appendChild(dot);
+        setTimeout(() => dot.remove(), 750);
+      }
+    }
+
+    function updateGlobalProgress() {
+      let total = 0;
+      let done = 0;
+      itineraryData.forEach(d => {
+        d.steps.forEach(s => {
+          total++;
+          if (checkedSteps[s.id]) done++;
+        });
+      });
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+      document.getElementById("globalProgressFill").style.width = pct + "%";
+      document.getElementById("progressText").textContent = `${done} / ${total} étapes complétées (${pct}%)`;
+    }
+
+    // NAVIGATION PAR ONGLETS
+    function switchTab(tabName, btnEl) {
+      document.querySelectorAll(".tab-section").forEach(s => s.classList.remove("active"));
+      document.getElementById("tab-" + tabName).classList.add("active");
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+      btnEl.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // CONVERTISSEUR SEK <-> EUR
+    const RATE_SEK_PER_EUR = 11.40;
+    function convertFromSek() {
+      const sek = parseFloat(document.getElementById("sekInput").value) || 0;
+      document.getElementById("eurInput").value = (sek / RATE_SEK_PER_EUR).toFixed(2);
+    }
+    function convertFromEur() {
+      const eur = parseFloat(document.getElementById("eurInput").value) || 0;
+      document.getElementById("sekInput").value = Math.round(eur * RATE_SEK_PER_EUR);
+    }
+
+    // GESTION DES DÉPENSES SUR PLACE
+    function addExpense() {
+      const titleInput = document.getElementById("expTitle");
+      const amountInput = document.getElementById("expAmount");
+      const title = titleInput.value.trim();
+      const amount = parseFloat(amountInput.value);
+      if (!title || isNaN(amount) || amount <= 0) return;
+
+      customExpenses.unshift({ id: Date.now(), title, amount });
+      localStorage.setItem(STORAGE_EXPENSES, JSON.stringify(customExpenses));
+      titleInput.value = "";
+      amountInput.value = "";
+      renderExpenses();
+    }
+
+    function deleteExpense(id) {
+      customExpenses = customExpenses.filter(e => e.id !== id);
+      localStorage.setItem(STORAGE_EXPENSES, JSON.stringify(customExpenses));
+      renderExpenses();
+    }
+
+    function renderExpenses() {
+      const totalOnSite = customExpenses.reduce((acc, item) => acc + item.amount, 0);
+      document.getElementById("spentOnSiteVal").textContent = totalOnSite.toFixed(0) + " €";
+
+      const listEl = document.getElementById("expenseList");
+      if (customExpenses.length === 0) {
+        listEl.innerHTML = `<p style="font-size:0.8rem; color:var(--text-muted); padding-top:10px;">Aucune dépense enregistrée pour le moment.</p>`;
+        return;
+      }
+
+      listEl.innerHTML = customExpenses.map(e => `
+        <div class="expense-row">
+          <span>${e.title}</span>
+          <div>
+            <strong>${e.amount.toFixed(2)} €</strong>
+            <button class="btn-del" onclick="deleteExpense(${e.id})" title="Supprimer">✕</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
