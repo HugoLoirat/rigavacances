@@ -29,7 +29,7 @@
       --accent-forest: #2D5A4C;
       --accent-gold: #D49B35;
       --border-soft: #E6DBD0;
-      --shadow-card: 0 8px 24px rgba(44, 34, 30, 0.06);
+      --shadow-card: 0 10px 28px rgba(44, 34, 30, 0.07);
       --radius-lg: 20px;
       --radius-md: 14px;
       --radius-sm: 10px;
@@ -44,7 +44,7 @@
       background-color: var(--bg-paper);
       color: var(--text-main);
       line-height: 1.55;
-      padding-bottom: 145px;
+      padding-bottom: 148px;
       max-width: 540px;
       margin: 0 auto;
       min-height: 100vh;
@@ -56,30 +56,30 @@
 
     /* HEADER CARNET DE VOYAGE ANIMÉ */
     .hero-header {
-      background: linear-gradient(155deg, #2D5A4C 0%, #1B3B32 100%);
+      background: linear-gradient(155deg, #2D5A4C 0%, #18352C 100%);
       color: #FAF5EE;
       padding: 22px 18px 18px;
-      border-bottom-left-radius: 26px;
-      border-bottom-right-radius: 26px;
+      border-bottom-left-radius: 28px;
+      border-bottom-right-radius: 28px;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 8px 24px rgba(27, 59, 50, 0.16);
+      box-shadow: 0 10px 28px rgba(27, 59, 50, 0.22);
     }
 
     .hero-header::before, .hero-header::after {
       content: "";
       position: absolute;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(244, 185, 97, 0.25) 0%, rgba(244, 185, 97, 0) 70%);
+      background: radial-gradient(circle, rgba(244, 185, 97, 0.28) 0%, rgba(244, 185, 97, 0) 70%);
       pointer-events: none;
-      animation: floatOrb 7s ease-in-out infinite alternate;
+      animation: floatOrb 6s ease-in-out infinite alternate;
     }
     .hero-header::before { width: 220px; height: 220px; top: -80px; right: -40px; }
-    .hero-header::after { width: 180px; height: 180px; bottom: -70px; left: -40px; animation-delay: -3.5s; }
+    .hero-header::after { width: 180px; height: 180px; bottom: -70px; left: -40px; animation-delay: -3s; }
 
     @keyframes floatOrb {
       0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(-15px, 12px) scale(1.12); }
+      100% { transform: translate(-18px, 14px) scale(1.16); }
     }
 
     .hero-top-row {
@@ -109,22 +109,25 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      background: rgba(244, 185, 97, 0.24);
-      border: 1px solid rgba(244, 185, 97, 0.55);
+      background: rgba(244, 185, 97, 0.26);
+      border: 1px solid rgba(244, 185, 97, 0.6);
       color: #FFF;
-      padding: 4px 10px;
+      padding: 4px 11px;
       border-radius: 99px;
       font-size: 0.72rem;
       font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s var(--spring);
     }
+    .pedometer-pill:active { transform: scale(0.92); }
 
-    .hero-header h1 { font-size: 1.55rem; line-height: 1.2; margin-bottom: 4px; }
+    .hero-header h1 { font-size: 1.58rem; line-height: 1.2; margin-bottom: 4px; }
     .hero-subtitle { font-size: 0.83rem; opacity: 0.9; margin-bottom: 10px; }
 
     .progress-bar-wrap {
       background: rgba(255, 255, 255, 0.18);
       border-radius: 99px;
-      height: 9px;
+      height: 10px;
       width: 100%;
       overflow: hidden;
       margin-top: 6px;
@@ -137,7 +140,7 @@
       width: 0%;
       border-radius: 99px;
       transition: width 0.6s var(--spring);
-      animation: shimmer 2.8s infinite linear;
+      animation: shimmer 2.5s infinite linear;
     }
 
     @keyframes shimmer {
@@ -152,6 +155,58 @@
       opacity: 0.94;
       margin-top: 6px;
       font-weight: 500;
+    }
+
+    /* NOUVEAU BANDEAU "PROCHAINE ÉTAPE EN DIRECT" */
+    .today-banner {
+      background: linear-gradient(135deg, #FCEEE9 0%, #FDF6E4 100%);
+      border: 1.5px solid #F0D5C8;
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 16px rgba(200, 90, 50, 0.1);
+      animation: pulseCard 4s ease-in-out infinite;
+    }
+
+    @keyframes pulseCard {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2px); }
+    }
+
+    .today-banner-left { flex: 1; }
+    .today-banner-tag {
+      font-size: 0.66rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--accent-terra);
+      letter-spacing: 0.04em;
+    }
+    .today-banner-title {
+      font-family: 'Fraunces', serif;
+      font-size: 0.96rem;
+      color: var(--text-main);
+      margin-top: 1px;
+    }
+
+    /* NOUVELLE BARRE MÉTÉO & COUCHER DU SOLEIL */
+    .weather-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: var(--bg-sage-light);
+      border: 1px solid #CFE0D7;
+      padding: 9px 12px;
+      border-radius: 12px;
+      font-size: 0.76rem;
+      color: var(--accent-forest);
+      font-weight: 700;
+      margin-bottom: 12px;
     }
 
     /* DOCK EN BAS EN LIQUID GLASS SURÉLEVÉ */
@@ -229,17 +284,17 @@
     .nav-btn:active { transform: scale(0.88); }
 
     /* SECTIONS & ANIMATIONS */
-    .tab-section { display: none; padding: 16px 15px 24px; }
+    .tab-section { display: none; padding: 14px 15px 24px; }
     .tab-section.active { display: block; animation: tabAppear 0.38s var(--smooth) both; }
 
     @keyframes tabAppear {
-      from { opacity: 0; transform: translateY(12px); }
+      from { opacity: 0; transform: translateY(14px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes cardCascade {
-      from { opacity: 0; transform: translateY(18px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(20px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .day-selector {
@@ -322,27 +377,28 @@
       border-bottom: 1px solid #F3ECE4;
       align-items: flex-start;
       border-radius: 10px;
+      transition: transform 0.25s var(--spring), background-color 0.25s;
     }
     .step-item:last-child { border-bottom: none; padding-bottom: 2px; }
 
     .step-checkbox {
       appearance: none;
-      width: 23px;
-      height: 23px;
+      width: 24px;
+      height: 24px;
       border: 2px solid var(--accent-terra);
-      border-radius: 7px;
+      border-radius: 8px;
       margin-top: 2px;
       flex-shrink: 0;
       cursor: pointer;
       display: grid;
       place-content: center;
       background: #FFF;
-      transition: all 0.25s var(--spring);
+      transition: all 0.28s var(--spring);
     }
     .step-checkbox:checked {
       background: var(--accent-forest);
       border-color: var(--accent-forest);
-      transform: scale(1.1);
+      transform: scale(1.15) rotate(4deg);
     }
     .step-checkbox:checked::after {
       content: "✓";
@@ -385,12 +441,14 @@
       cursor: pointer;
       font-family: inherit;
       font-size: 0.73rem;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--accent-forest);
       background: var(--bg-sage-light);
       padding: 6px 11px;
       border-radius: 9px;
+      transition: transform 0.2s var(--spring);
     }
+    .btn-map:active { transform: scale(0.92); }
     .btn-map.terra { color: var(--accent-terra-dark); background: var(--bg-accent-light); }
 
     /* CARTE INTERACTIVE & PION COUPLE 💑 */
@@ -418,34 +476,34 @@
 
     .couple-marker-wrap {
       position: relative;
-      width: 48px;
-      height: 48px;
+      width: 52px;
+      height: 52px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .couple-pulse-ring {
       position: absolute;
-      width: 48px;
-      height: 48px;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
-      background: rgba(200, 90, 50, 0.35);
-      animation: couplePulse 2s ease-out infinite;
+      background: rgba(200, 90, 50, 0.38);
+      animation: couplePulse 1.8s ease-out infinite;
     }
     .couple-avatar-pin {
       position: relative;
       z-index: 2;
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background: linear-gradient(135deg, #C85A32, #A3421F);
       border: 2.5px solid #FFFFFF;
-      box-shadow: 0 4px 12px rgba(44, 34, 30, 0.35);
+      box-shadow: 0 5px 14px rgba(44, 34, 30, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
-      animation: coupleBounce 2.4s ease-in-out infinite;
+      font-size: 1.25rem;
+      animation: coupleBounce 2.2s ease-in-out infinite;
     }
     .couple-label-badge {
       position: absolute;
@@ -453,7 +511,7 @@
       white-space: nowrap;
       background: #2C221E;
       color: #FFF;
-      font-size: 0.64rem;
+      font-size: 0.65rem;
       font-weight: 700;
       padding: 2px 8px;
       border-radius: 99px;
@@ -461,12 +519,12 @@
     }
 
     @keyframes couplePulse {
-      0% { transform: scale(0.75); opacity: 0.9; }
-      100% { transform: scale(1.8); opacity: 0; }
+      0% { transform: scale(0.75); opacity: 0.95; }
+      100% { transform: scale(1.9); opacity: 0; }
     }
     @keyframes coupleBounce {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
+      50% { transform: translateY(-5px); }
     }
 
     .step-pin-num {
@@ -486,18 +544,16 @@
     .step-pin-num.active-stop {
       background: var(--accent-gold);
       color: #2C221E;
-      transform: scale(1.22);
+      transform: scale(1.25);
     }
 
     .map-controls-bar {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 8px;
       margin-top: 10px;
-      flex-wrap: wrap;
     }
     .btn-map-ctrl {
-      flex: 1;
-      min-width: 90px;
       background: var(--bg-warm);
       border: 1px solid var(--border-soft);
       color: var(--text-main);
@@ -507,7 +563,9 @@
       font-weight: 700;
       cursor: pointer;
       font-family: inherit;
+      transition: transform 0.2s var(--spring);
     }
+    .btn-map-ctrl:active { transform: scale(0.94); }
     .btn-map-ctrl.primary { background: var(--accent-terra); color: #FFF; border-color: var(--accent-terra); }
     .btn-map-ctrl.gps-active { background: var(--accent-forest); color: #FFF; border-color: var(--accent-forest); }
 
@@ -609,12 +667,12 @@
 
     .confetti-dot {
       position: fixed;
-      width: 7px;
-      height: 7px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       pointer-events: none;
       z-index: 9999;
-      animation: popConfetti 0.7s ease-out forwards;
+      animation: popConfetti 0.75s ease-out forwards;
     }
     @keyframes popConfetti {
       0% { transform: translate(0, 0) scale(1); opacity: 1; }
@@ -628,7 +686,9 @@
   <header class="hero-header">
     <div class="hero-top-row">
       <div class="hero-badge">📓 Carnet • 24 Oct – 1 Nov</div>
-      <div class="pedometer-pill">💑 Hugo & Camille</div>
+      <div class="pedometer-pill" id="stepCounterPill" onclick="addWalkingSteps()" title="Clique pour ajouter +1 000 pas !">
+        👟 <span id="stepCountVal">0</span> pas (+1k)
+      </div>
     </div>
     <h1>Riga & Stockholm</h1>
     <p class="hero-subtitle">9 jours en amoureux entre Baltique et Scandinavie</p>
@@ -643,6 +703,21 @@
 
   <!-- ONGLET 1 : PROGRAMME JOUR PAR JOUR -->
   <main id="tab-itineraire" class="tab-section active">
+    <!-- NOUVEAU : BANDEAU PROCHAINE ÉTAPE EN DIRECT -->
+    <div class="today-banner" id="nextUpBanner">
+      <div class="today-banner-left">
+        <div class="today-banner-tag" id="nextUpTag">🧭 Prochaine étape à faire</div>
+        <div class="today-banner-title" id="nextUpTitle">Chargement...</div>
+      </div>
+      <button class="btn-map terra" id="nextUpMapBtn">🗺️ Carte Live</button>
+    </div>
+
+    <!-- NOUVEAU : BARRE MÉTÉO & HEURE COUCHER DE SOLEIL -->
+    <div class="weather-strip" id="weatherStrip">
+      <span>🍂 Météo moy. : 6°C à 10°C</span>
+      <span>🌅 Coucher du soleil : ~16h50 (Heure d'hiver)</span>
+    </div>
+
     <div class="day-selector" id="daySelector"></div>
     <div id="daysContainer"></div>
   </main>
@@ -656,6 +731,7 @@
       <div class="map-controls-bar">
         <button class="btn-map-ctrl" onclick="moveCoupleStep(-1)">◀ Étape préc.</button>
         <button class="btn-map-ctrl primary" onclick="moveCoupleStep(1)">Étape suiv. ▶</button>
+        <button class="btn-map-ctrl" id="btnAutoPlay" onclick="toggleAutoPlay()">▶ Animer parcours</button>
         <button class="btn-map-ctrl" id="btnRealGps" onclick="toggleRealGps()">📍 Notre GPS réel</button>
       </div>
     </div>
@@ -876,6 +952,7 @@
     const itineraryData = [
       {
         id: "j1", shortLabel: "Sam 24", subLabel: "Riga", tag: "🇱🇻 Riga • Jour 1", tagClass: "tag-riga",
+        weather: "🍂 Riga : 8°C • 🌅 Coucher du soleil : 17h52 (Heure d'été)",
         title: "Samedi 24 oct. — Arrivée & Vieille Ville (Vecrīga)",
         tip: "🎫 Dès l'arrivée à l'aéroport de Riga : prenez une carte rechargeable E-talons au distributeur de l'arrêt (ou l'appli Mobilly) pour le Bus 22 (1,50 € ou Pass 3 jours à 8 €).",
         steps: [
@@ -888,6 +965,7 @@
       },
       {
         id: "j2", shortLabel: "Dim 25", subLabel: "Riga", tag: "🇱🇻 Riga • Jour 2", tagClass: "tag-riga",
+        weather: "🍂 Riga : 7°C • 🌅 Coucher du soleil : 16h50 (Heure d'hiver !)",
         title: "Dimanche 25 oct. — Art Nouveau & Quartier Créatif",
         tip: "⏰ Le Musée de l'Art Nouveau est ouvert le dimanche (10h-18h) mais fermé le lundi : c'est le jour idéal.",
         steps: [
@@ -900,6 +978,7 @@
       },
       {
         id: "j3", shortLabel: "Lun 26", subLabel: "Riga", tag: "🇱🇻 Riga • Jour 3", tagClass: "tag-riga",
+        weather: "🍂 Riga : 7°C • 🌅 Coucher du soleil : 16h48",
         title: "Lundi 26 oct. — Marchés Gourmands, Panorama & Rive Gauche",
         tip: "💡 Envie d'un Spa ou d'un verre au Skyline Bar (26e étage) ce soir ? Tout est dans l'onglet « Options » !",
         steps: [
@@ -910,6 +989,7 @@
       },
       {
         id: "j4", shortLabel: "Mar 27", subLabel: "Stockholm", tag: "🇸🇪 Stockholm • Jour 4", tagClass: "tag-stockholm",
+        weather: "🇸🇪 Stockholm : 6°C • 🌅 Coucher du soleil : 16h12",
         title: "Mardi 27 oct. — Vol, Gamla Stan, Kanelbullar & Monteliusvägen",
         tip: "🎫 Dès l'arrivée à Arlanda (10h10) : prenez votre carte/appli SL (trajet Arlanda ↔ Alvik = ~22 € pour deux).",
         steps: [
@@ -921,6 +1001,7 @@
       },
       {
         id: "j5", shortLabel: "Mer 28", subLabel: "Stockholm", tag: "🇸🇪 Stockholm • Jour 5", tagClass: "tag-stockholm",
+        weather: "🇸🇪 Stockholm : 6°C • 🌅 Coucher du soleil : 16h09",
         title: "Mercredi 28 oct. — Relève de la Garde, Ferry & Musée Vasa",
         tip: "👑 La Relève de la Garde au Palais Royal a lieu à 12h15 précises !",
         steps: [
@@ -933,6 +1014,7 @@
       },
       {
         id: "j6", shortLabel: "Jeu 29", subLabel: "Stockholm", tag: "🇸🇪 Stockholm • Jour 6", tagClass: "tag-stockholm",
+        weather: "🇸🇪 Stockholm : 5°C • 🌅 Coucher du soleil : 16h06",
         title: "Jeudi 29 oct. — Gravlax, Îlot de Kastellet & Métro d'Art",
         tip: "🏰 Grimpez jusqu'à la petite citadelle rouge de Kastellet tout au bout de Skeppsholmen !",
         steps: [
@@ -944,6 +1026,7 @@
       },
       {
         id: "j7", shortLabel: "Ven 30", subLabel: "Vol Retour", tag: "🇸🇪➔🇱🇻 Stockholm & Retour • Jour 7", tagClass: "tag-stockholm",
+        weather: "🇸🇪 Stockholm : 6°C • ✈️ Vol retour à 20h15",
         title: "Vendredi 30 oct. — Stadshuset, Souvenirs Fika & Vol Retour",
         tip: "🎁 Achetez vos souvenirs Fika & Cinnamon (cardamome, cannelle, boîte de Kanelbullar) avant de filer à Arlanda vers 17h15.",
         steps: [
@@ -954,6 +1037,7 @@
       },
       {
         id: "j8", shortLabel: "Sam 31", subLabel: "Jūrmala", tag: "🌊 Côte Balte • Jour 8", tagClass: "tag-riga",
+        weather: "🌊 Jūrmala : 7°C • 🌅 Coucher du soleil sur la mer : 16h37",
         title: "Samedi 31 oct. — Plage, Pins & Villas en Bois à Jūrmala",
         tip: "🚗 Les options CityBee (Rundāle ou Kuldīga) restent accessibles dans l'onglet « Options » si vous avez envie de rouler.",
         steps: [
@@ -965,6 +1049,7 @@
       },
       {
         id: "j9", shortLabel: "Dim 1", subLabel: "Chill", tag: "☕ Journée Chill • Jour 9", tagClass: "tag-chill",
+        weather: "☕ Riga : 7°C • Journée 100 % détente",
         title: "Dimanche 1er nov. — Journée 100 % Chill, Ķīpsala & Brunch",
         tip: "🧘‍♂️ Zéro réveil, zéro course : journée détente en amoureux.",
         steps: [
@@ -975,11 +1060,13 @@
       }
     ];
 
-    const STORAGE_CHECKS = "voyage_riga_stockholm_checks_v4";
-    const STORAGE_EXPENSES = "voyage_riga_stockholm_expenses_v4";
+    const STORAGE_CHECKS = "voyage_riga_stockholm_checks_v5";
+    const STORAGE_EXPENSES = "voyage_riga_stockholm_expenses_v5";
+    const STORAGE_STEPS = "voyage_riga_stockholm_steps_v5";
 
     let checkedSteps = JSON.parse(localStorage.getItem(STORAGE_CHECKS) || "{}");
     let customExpenses = JSON.parse(localStorage.getItem(STORAGE_EXPENSES) || "[]");
+    let walkingSteps = parseInt(localStorage.getItem(STORAGE_STEPS) || "8500", 10);
     let currentDayFilter = "all";
 
     let mapInstance = null;
@@ -989,17 +1076,33 @@
     let stepMarkers = [];
     let routePolyline = null;
     let gpsWatchId = null;
+    let autoPlayTimer = null;
 
     function initApp() {
+      // Purge automatique des vieux caches bloquants
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => {
+          regs.forEach(r => r.update());
+        });
+      }
+      renderStepsCounter();
       renderDaySelector();
       renderMapDaySelector();
       renderDays();
       updateGlobalProgress();
       renderExpenses();
       updateCountdown();
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("./sw.js").catch(() => {});
-      }
+    }
+
+    function addWalkingSteps() {
+      walkingSteps += 1000;
+      localStorage.setItem(STORAGE_STEPS, walkingSteps.toString());
+      renderStepsCounter();
+    }
+
+    function renderStepsCounter() {
+      const km = (walkingSteps * 0.00075).toFixed(1);
+      document.getElementById("stepCountVal").textContent = `${walkingSteps.toLocaleString("fr-FR")} (${km} km)`;
     }
 
     function updateCountdown() {
@@ -1023,6 +1126,13 @@
 
     function filterDay(dayId) {
       currentDayFilter = dayId;
+      const strip = document.getElementById("weatherStrip");
+      if (dayId === "all") {
+        strip.innerHTML = `<span>🍂 Météo moy. : 6°C à 10°C</span><span>🌅 Coucher du soleil : ~16h50 (Heure d'hiver)</span>`;
+      } else {
+        const dayObj = itineraryData.find(d => d.id === dayId);
+        if (dayObj) strip.innerHTML = `<span>${dayObj.weather}</span>`;
+      }
       renderDaySelector();
       renderDays();
     }
@@ -1066,6 +1176,38 @@
       }).join("");
     }
 
+    function updateNextUpBanner() {
+      let foundDay = null;
+      let foundStep = null;
+      let foundIdx = 0;
+
+      for (const d of itineraryData) {
+        for (let i = 0; i < d.steps.length; i++) {
+          if (!checkedSteps[d.steps[i].id]) {
+            foundDay = d;
+            foundStep = d.steps[i];
+            foundIdx = i;
+            break;
+          }
+        }
+        if (foundStep) break;
+      }
+
+      const tagEl = document.getElementById("nextUpTag");
+      const titleEl = document.getElementById("nextUpTitle");
+      const btnEl = document.getElementById("nextUpMapBtn");
+
+      if (foundStep && foundDay) {
+        tagEl.textContent = `🧭 Prochaine étape • ${foundDay.shortLabel} (${foundStep.time})`;
+        titleEl.textContent = foundStep.title;
+        btnEl.onclick = () => focusStepOnMap(foundDay.id, foundIdx);
+      } else {
+        tagEl.textContent = `🎉 Séjour 100 % complété !`;
+        titleEl.textContent = `Toutes les visites ont été cochées ❤️`;
+        btnEl.onclick = () => focusStepOnMap("j1", 0);
+      }
+    }
+
     function renderMapDaySelector() {
       const container = document.getElementById("mapDaySelector");
       container.innerHTML = itineraryData.map(d => `
@@ -1091,6 +1233,7 @@
 
     function selectMapDay(dayId, stepIdx = 0) {
       stopRealGps();
+      stopAutoPlay();
       mapCurrentDayId = dayId;
       mapCurrentStepIdx = stepIdx;
       renderMapDaySelector();
@@ -1106,7 +1249,7 @@
       if (routePolyline) mapInstance.removeLayer(routePolyline);
 
       const coords = dayObj.steps.map(s => [s.lat, s.lng]);
-      routePolyline = L.polyline(coords, { color: "#2D5A4C", weight: 4, dashArray: "8, 8", opacity: 0.8 }).addTo(mapInstance);
+      routePolyline = L.polyline(coords, { color: "#2D5A4C", weight: 4, dashArray: "8, 8", opacity: 0.85 }).addTo(mapInstance);
 
       dayObj.steps.forEach((s, idx) => {
         const icon = L.divIcon({
@@ -1118,6 +1261,7 @@
         const marker = L.marker([s.lat, s.lng], { icon }).addTo(mapInstance);
         marker.on("click", () => {
           stopRealGps();
+          stopAutoPlay();
           mapCurrentStepIdx = idx;
           updateCouplePositionOnProgram();
         });
@@ -1146,13 +1290,13 @@
         className: "",
         html: `
           <div class="couple-marker-wrap">
-            <div class="couple-label-badge">Nous deux ❤️</div>
+            <div class="couple-label-badge">Hugo & Camille ❤️</div>
             <div class="couple-pulse-ring"></div>
             <div class="couple-avatar-pin">💑</div>
           </div>
         `,
-        iconSize: [48, 48],
-        iconAnchor: [24, 24]
+        iconSize: [52, 52],
+        iconAnchor: [26, 26]
       });
 
       if (!coupleMarker) {
@@ -1179,6 +1323,30 @@
       updateCouplePositionOnProgram(false);
     }
 
+    function toggleAutoPlay() {
+      const btn = document.getElementById("btnAutoPlay");
+      if (autoPlayTimer) {
+        stopAutoPlay();
+        return;
+      }
+      stopRealGps();
+      btn.classList.add("gps-active");
+      btn.textContent = "⏸ Pause parcours";
+      autoPlayTimer = setInterval(() => {
+        moveCoupleStep(1);
+      }, 2200);
+    }
+
+    function stopAutoPlay() {
+      if (autoPlayTimer) clearInterval(autoPlayTimer);
+      autoPlayTimer = null;
+      const btn = document.getElementById("btnAutoPlay");
+      if (btn) {
+        btn.classList.remove("gps-active");
+        btn.textContent = "▶ Animer parcours";
+      }
+    }
+
     function focusStepOnMap(dayId, stepIdx) {
       const navBtns = document.querySelectorAll(".nav-btn");
       switchTab("carte", navBtns[1], 1);
@@ -1186,6 +1354,7 @@
     }
 
     function toggleRealGps() {
+      stopAutoPlay();
       const btn = document.getElementById("btnRealGps");
       if (gpsWatchId !== null) {
         stopRealGps();
@@ -1237,18 +1406,18 @@
 
     function spawnConfetti(x, y) {
       const colors = ["#C85A32", "#2D5A4C", "#D49B35", "#F4B961", "#E07A5F"];
-      for (let i = 0; i < 14; i++) {
+      for (let i = 0; i < 16; i++) {
         const dot = document.createElement("div");
         dot.className = "confetti-dot";
         dot.style.left = x + "px";
         dot.style.top = y + "px";
         dot.style.backgroundColor = colors[i % colors.length];
-        const angle = (Math.PI * 2 * i) / 14;
-        const dist = 24 + Math.random() * 34;
+        const angle = (Math.PI * 2 * i) / 16;
+        const dist = 26 + Math.random() * 38;
         dot.style.setProperty("--tx", Math.cos(angle) * dist + "px");
-        dot.style.setProperty("--ty", Math.sin(angle) * dist - 10 + "px");
+        dot.style.setProperty("--ty", Math.sin(angle) * dist - 12 + "px");
         document.body.appendChild(dot);
-        setTimeout(() => dot.remove(), 700);
+        setTimeout(() => dot.remove(), 750);
       }
     }
 
@@ -1270,6 +1439,7 @@
       const pct = total > 0 ? Math.round((done / total) * 100) : 0;
       document.getElementById("globalProgressFill").style.width = pct + "%";
       document.getElementById("progressText").textContent = `${done} / ${total} étapes visitées (${pct}%)`;
+      updateNextUpBanner();
     }
 
     function switchTab(tabName, btnEl, index) {
@@ -1281,6 +1451,7 @@
       const glider = document.getElementById("navGlider");
       if (glider && typeof index === "number") glider.style.transform = `translateX(${index * 100}%)`;
       if (tabName === "carte") initOrUpdateMap();
+      else stopAutoPlay();
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
