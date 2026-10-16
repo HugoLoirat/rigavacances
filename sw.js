@@ -1,18 +1,18 @@
-const CACHE_STATIC = "riga-stockholm-static-v3";
-const CACHE_TILES = "riga-stockholm-tiles-v3";
+const CACHE_STATIC = "riga-stockholm-static-v4";
+const CACHE_TILES = "riga-stockholm-tiles-v4";
 
 const CORE_ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
   "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
-  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
-  "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+  "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
 ];
 
 self.addEventListener("install", event => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_STATIC).then(cache => cache.addAll(CORE_ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE_STATIC).then(cache => cache.addAll(CORE_ASSETS))
   );
 });
 
@@ -31,7 +31,6 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   const url = new URL(event.request.url);
 
-  // Mise en cache automatique des tuiles OpenStreetMap pour usage hors-ligne
   if (url.hostname.includes("tile.openstreetmap.org")) {
     event.respondWith(
       caches.open(CACHE_TILES).then(cache =>
@@ -49,7 +48,6 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // Stratégie Network-First avec repli hors-ligne immédiat
   event.respondWith(
     fetch(event.request)
       .then(res => {
