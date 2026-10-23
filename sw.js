@@ -1,6 +1,6 @@
-const V = "v6";
+const V = "v7";
 const STATIC = `rs-static-${V}`, TILES = `rs-tiles-${V}`, FONTS = `rs-fonts-${V}`;
-const CORE = ["./", "./index.html", "./upgrade.js", "./manifest.json", "./icon-180.png", "./icon-192.png", "./icon-512.png",
+const CORE = ["./", "./index.html", "./upgrade.js", "./scrollfx.js", "./manifest.json", "./icon-180.png", "./icon-192.png", "./icon-512.png",
   "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css", "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"];
 
 self.addEventListener("install", e => {
