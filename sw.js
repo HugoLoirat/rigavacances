@@ -1,4 +1,4 @@
-const V = "v5";
+const V = "v6";
 const STATIC = `rs-static-${V}`, TILES = `rs-tiles-${V}`, FONTS = `rs-fonts-${V}`;
 const CORE = ["./", "./index.html", "./upgrade.js", "./manifest.json", "./icon-180.png", "./icon-192.png", "./icon-512.png",
   "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css", "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"];
