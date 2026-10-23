@@ -184,38 +184,194 @@ window.updateNextUpBanner=()=>{
   const row=$('#row_'+S.id); if(row) row.classList.add('now');
 };
 
-/* ---------- carte : vrais itinéraires piétons + temps de marche + hors-ligne ---------- */
-const runsOf=day=>{ const runs=[]; let cur=[day.steps[0]];
-  for(let i=1;i<day.steps.length;i++){ const a=day.steps[i-1],b=day.steps[i];
-    if(computeDistanceKm(a.lat,a.lng,b.lat,b.lng)>15){ runs.push(cur); cur=[b]; } else cur.push(b); }
-  runs.push(cur);
-  return runs.filter(r=>r.length>1&&r.some(s=>computeDistanceKm(r[0].lat,r[0].lng,s.lat,s.lng)>0.1)); };
-const showLines=(real,fb)=>{ if(!mapInstance) return; if(routePolyline) mapInstance.removeLayer(routePolyline);
-  const o={color:'#2D5A4C',opacity:.9};
-  routePolyline=L.featureGroup([L.polyline(real,{...o,weight:5}),L.polyline(fb,{...o,weight:4,dashArray:'8, 8'})]).addTo(mapInstance); };
-async function upgradeRoute(day){
-  const key='rs_route2_'+day.id; let real=LS.get(key,null), fb=[];
-  if(!real){ real=[];
-    for(const run of runsOf(day)){ try{
-      const c=run.map(s=>s.lng+','+s.lat).join(';');
-      const j=await(await fetch(`https://routing.openstreetmap.de/routed-foot/route/v1/foot/${c}?overview=full&geometries=geojson`)).json();
-      const R=j.routes&&j.routes[0]; if(j.code!=='Ok'||!R||R.distance>40000) throw 0;
-      real.push(R.geometry.coordinates.map(p=>[+p[1].toFixed(5),+p[0].toFixed(5)]));
-    }catch(e){ fb.push(run.map(s=>[s.lat,s.lng])); } }
-    if(!fb.length) LS.set(key,real);
+/* ---------- carte : un tracé précis pour CHAQUE trajet (marche, route, bus/train, vol) ---------- */
+const GREEN='#2D5A4C', TERRA='#C85A32';
+const AIR=[{lat:56.9236,lng:23.9711,n:'RIX'},{lat:59.6498,lng:17.9238,n:'ARN'}];
+const hav=(a,b)=>computeDistanceKm(a.lat,a.lng,b.lat,b.lng);
+const nearAir=p=>AIR.reduce((m,x)=>hav(p,x)<hav(p,m)?x:m,AIR[0]);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const fmtMin=s=>{ const m=Math.max(1,Math.round(s/60)); return m>=60?Math.floor(m/60)+' h '+String(m%60).padStart(2,'0'):m+' min'; };
+const PROV={
+  foot:['https://routing.openstreetmap.de/routed-foot/route/v1/foot/','https://routing.openstreetmap.de/routed-bike/route/v1/bike/','https://router.project-osrm.org/route/v1/driving/'],
+  car:['https://routing.openstreetmap.de/routed-car/route/v1/driving/','https://router.project-osrm.org/route/v1/driving/']
+};
+const legKey=(m,a,b)=>`rs_leg4_${m}_${a.lat.toFixed(4)},${a.lng.toFixed(4)}_${b.lat.toFixed(4)},${b.lng.toFixed(4)}`;
+
+/* découpe une journée en trajets : chaque paire d'étapes a son propre tracé */
+function legsOf(day){
+  const out=[], st=day.steps;
+  for(let i=1;i<st.length;i++){
+    const a=st[i-1], b=st[i], km=hav(a,b), push=(mode,p,q)=>out.push({i:i-1,mode,a:p,b:q,km:hav(p,q),ta:a.title,tb:b.title});
+    if(km<0.08){ push('none',a,b); continue; }
+    if(km>300){                      // vol : arc aérien + trajets au sol aux deux bouts
+      const a2=nearAir(a), b2=nearAir(b);
+      if(hav(a,a2)>0.4) push(hav(a,a2)>8?'car':'foot',a,a2);
+      push('air',a2,b2);
+      if(hav(b2,b)>0.4) push(hav(b2,b)>8?'car':'foot',b2,b);
+    } else push(km>8?'car':'foot',a,b);
   }
-  if(mapCurrentDayId===day.id) showLines(real,fb);
+  return out;
 }
-const _draw=drawDayOnMap; window.drawDayOnMap=()=>{ _draw(); const d=itineraryData.find(x=>x.id===mapCurrentDayId); if(d){ showLines([],runsOf(d).map(r=>r.map(s=>[s.lat,s.lng]))); upgradeRoute(d); } };
-const _upd=updateCouplePositionOnProgram; window.updateCouplePositionOnProgram=f=>{ _upd(f);
+
+/* arc de vol (calculé dans l'espace Mercator pour qu'il paraisse courbe sur la carte) */
+const mY=la=>Math.asinh(Math.tan(la*Math.PI/180))*180/Math.PI, mLat=y=>Math.atan(Math.sinh(y*Math.PI/180))*180/Math.PI;
+function arc(a,b){
+  const x1=a.lng,y1=mY(a.lat),x2=b.lng,y2=mY(b.lat), dx=x2-x1, dy=y2-y1, len=Math.hypot(dx,dy)||1;
+  let nx=-dy/len, ny=dx/len; if(ny<0){ nx=-nx; ny=-ny; }
+  const h=0.18*len, pts=[];
+  for(let k=0;k<=56;k++){ const t=k/56, s=Math.sin(Math.PI*t)*h; pts.push([mLat(y1+dy*t+ny*s), x1+dx*t+nx*s]); }
+  return pts;
+}
+
+/* récupération d'un tracé réel (plusieurs serveurs en secours, cache local, déduplication) */
+const legMem=new Map(), inflight=new Map();
+async function osrm(base,a,b,ms){
+  const ac=new AbortController(), to=setTimeout(()=>ac.abort(),ms);
+  try{
+    const r=await fetch(`${base}${a.lng},${a.lat};${b.lng},${b.lat}?overview=full&geometries=geojson`,{signal:ac.signal});
+    if(!r.ok) throw new Error('http');
+    const j=await r.json(), R=j.routes&&j.routes[0];
+    if(j.code!=='Ok'||!R||!R.geometry||R.geometry.coordinates.length<2) throw new Error('vide');
+    return R;
+  } finally { clearTimeout(to); }
+}
+function cached(leg){
+  const k=legKey(leg.mode,leg.a,leg.b);
+  if(legMem.has(k)) return legMem.get(k);
+  const v=LS.get(k,null); if(v&&v.p&&v.p.length>1){ legMem.set(k,v); return v; }
+  return null;
+}
+function fetchLeg(leg){
+  const k=legKey(leg.mode,leg.a,leg.b), hit=cached(leg); if(hit) return Promise.resolve(hit);
+  if(inflight.has(k)) return inflight.get(k);
+  const p=(async()=>{
+    for(const base of PROV[leg.mode]){
+      try{
+        const R=await osrm(base,leg.a,leg.b,9000);
+        if(R.distance/1000>leg.km*3.5+2) continue;                   // mauvais accrochage : on essaie le serveur suivant
+        const walk=leg.mode==='foot';
+        const o={ p:R.geometry.coordinates.map(c=>[+c[1].toFixed(5),+c[0].toFixed(5)]), d:Math.round(R.distance), t:walk?Math.round(R.distance/1.33):Math.round(R.duration) };
+        legMem.set(k,o); LS.set(k,o); return o;
+      }catch(e){}
+    }
+    return null;
+  })().finally(()=>inflight.delete(k));
+  inflight.set(k,p); return p;
+}
+const geomOf=leg=>leg.mode==='air'?(leg.pts||(leg.pts=arc(leg.a,leg.b))):(cached(leg)?cached(leg).p:[[leg.a.lat,leg.a.lng],[leg.b.lat,leg.b.lng]]);
+
+/* libellé au clic sur un tracé */
+function labelOf(leg){
+  const d=cached(leg), km=d?d.d/1000:leg.km*1.25, kms=km>=10?Math.round(km)+' km':km.toFixed(1).replace('.',',')+' km';
+  if(leg.mode==='air') return `✈️ Vol ${leg.a.n} → ${leg.b.n} · ${Math.round(leg.km)} km · ${leg.km>400?'≈ 1 h 15':'≈ 1 h'}`;
+  const txt=(leg.ta+' '+leg.tb).toLowerCase();
+  if(leg.mode==='car'&&km>15&&/flixbus/.test(txt)) return `🚌 FlixBus · ${kms}${d?' · ≈ '+fmtMin(d.t):''}`;
+  if(leg.mode==='car'&&km>15&&/train/.test(txt)) return `🚆 Train · ${kms} · ≈ 30 min`;
+  if(leg.mode==='car') return `🚌 Bus / 🚕 Bolt · ${kms}${d?' · ≈ '+fmtMin(d.t):''}`;
+  return `🚶 À pied · ${kms}${d?' · ≈ '+fmtMin(d.t):''}`;
+}
+
+/* dessin : tous les traits sont pleins, jamais en pointillés */
+let RG=null, RTOK=0, RDAY=null, RLEGS=[], RMSG=null;
+function paintLeg(leg){
+  if(!RG) return;
+  if(leg.layer){ RG.removeLayer(leg.layer); leg.layer=null; }
+  if(leg.mode==='none') return;
+  const real=leg.mode==='air'||!!cached(leg), pts=geomOf(leg), air=leg.mode==='air', col=air?TERRA:GREEN;
+  const casing=L.polyline(pts,{color:'#fff',weight:9,opacity:real?.7:.35,lineCap:'round',lineJoin:'round',interactive:false});
+  const line=L.polyline(pts,{color:col,weight:real?5:4,opacity:real?.95:.5,lineCap:'round',lineJoin:'round'}).bindPopup(()=>labelOf(leg));
+  const parts=[casing,line];
+  if(air){
+    const m=pts[Math.floor(pts.length/2)], p0=pts[Math.floor(pts.length/2)-2], p1=pts[Math.floor(pts.length/2)+2];
+    const ang=Math.atan2(mY(p1[0])-mY(p0[0]),p1[1]-p0[1])*180/Math.PI;
+    const ic=L.divIcon({className:'',html:`<div style="font-size:22px;line-height:28px;text-align:center;transform:rotate(${(45-ang).toFixed(0)}deg);filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))">✈️</div>`,iconSize:[28,28],iconAnchor:[14,14]});
+    parts.push(L.marker(m,{icon:ic,interactive:true,keyboard:false}).bindPopup(()=>labelOf(leg)));
+  }
+  leg.layer=L.featureGroup(parts).addTo(RG);
+}
+function routeStatus(){
+  if(!RMSG) return;
+  const g=RLEGS.filter(l=>l.mode==='foot'||l.mode==='car'), ok=g.filter(l=>cached(l)).length, air=RLEGS.some(l=>l.mode==='air');
+  RMSG.innerHTML=!g.length?(air?'✈️ Trajet en avion tracé sur la carte':''):ok===g.length?`✅ Trajets précis sur les routes${air?' · ✈️ vol en arc':''} <small>(touchez un tracé pour la durée)</small>`:
+    navigator.onLine?`⏳ Tracé des routes… ${ok}/${g.length}`:`📴 Hors-ligne : ${ok}/${g.length} trajets précis en mémoire. <a href="#" onclick="retryRoutes();return false" style="color:var(--accent-terra-dark)">Réessayer</a>`;
+}
+async function loadLegs(tok,attempt){
+  const todo=RLEGS.filter(l=>(l.mode==='foot'||l.mode==='car')&&!cached(l));
+  for(const l of todo){
+    if(tok!==RTOK) return;
+    const r=await fetchLeg(l); if(tok!==RTOK) return;
+    if(r){ paintLeg(l); routeStatus(); } await sleep(90);
+  }
+  if(tok!==RTOK) return;
+  routeStatus();
+  const left=RLEGS.filter(l=>(l.mode==='foot'||l.mode==='car')&&!cached(l)).length;
+  if(left&&attempt<4&&navigator.onLine){ await sleep(2500*attempt); if(tok===RTOK) loadLegs(tok,attempt+1); }
+}
+window.retryRoutes=()=>{ if(RDAY){ const tok=++RTOK; routeStatus(); loadLegs(tok,1); } };
+function paintRoute(day){
+  const tok=++RTOK; RDAY=day.id; RLEGS=legsOf(day);
+  if(routePolyline&&mapInstance) mapInstance.removeLayer(routePolyline);
+  RG=L.featureGroup().addTo(mapInstance); routePolyline=RG;
+  if(!RMSG){ const box=$('#voyageMap'); box.insertAdjacentHTML('afterend','<div id="routeStat" style="font-size:.74rem;color:var(--text-muted);margin-top:8px;min-height:1.1em"></div>'); RMSG=$('#routeStat'); }
+  RLEGS.forEach(paintLeg); routeStatus(); loadLegs(tok,1);
+}
+/* préchargement silencieux de tous les jours : les tracés restent disponibles hors-ligne */
+let prefetching=false;
+async function prefetchAll(){
+  if(prefetching||!navigator.onLine) return; prefetching=true;
+  try{ for(const d of itineraryData){ for(const l of legsOf(d)){ if((l.mode==='foot'||l.mode==='car')&&!cached(l)){ await fetchLeg(l); await sleep(250); } } } }catch(e){}
+  prefetching=false;
+}
+window.addEventListener('online',()=>{ net(); retryRoutes(); setTimeout(prefetchAll,1500); });
+
+const _draw=drawDayOnMap; window.drawDayOnMap=()=>{ _draw(); const d=itineraryData.find(x=>x.id===mapCurrentDayId); if(d) paintRoute(d); };
+
+/* suit le trajet : caméra cadrée sur le parcours + le couple se déplace le long de la vraie route */
+let lastPos=null, animTok=0;
+function followLeg(dayId,i,reverse){
+  if(RDAY!==dayId||!mapInstance) return;
+  let legs=RLEGS.filter(l=>l.i===i&&l.mode!=='none'); if(!legs.length) return;
+  let pts=[]; (reverse?legs.slice().reverse():legs).forEach(l=>{ let g=geomOf(l); if(reverse) g=g.slice().reverse(); pts=pts.concat(g); });
+  if(pts.length<2) return;
+  mapInstance.flyToBounds(L.latLngBounds(pts),{padding:[46,46],maxZoom:15,duration:.9});
+  if(!coupleMarker) return;
+  const cum=[0]; for(let k=1;k<pts.length;k++) cum.push(cum[k-1]+hav({lat:pts[k-1][0],lng:pts[k-1][1]},{lat:pts[k][0],lng:pts[k][1]}));
+  const tot=cum[cum.length-1], dur=Math.min(1900,700+tot*30), t0=performance.now(), tok=++animTok, end=pts[pts.length-1];
+  coupleMarker.setLatLng(pts[0]);
+  const step=now=>{
+    if(tok!==animTok) return;
+    let u=Math.min(1,(now-t0)/dur); const e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2, target=e*tot;
+    let k=1; while(k<cum.length-1&&cum[k]<target) k++;
+    const seg=(cum[k]-cum[k-1])||1, f=Math.min(1,Math.max(0,(target-cum[k-1])/seg));
+    coupleMarker.setLatLng(u>=1?end:[pts[k-1][0]+(pts[k][0]-pts[k-1][0])*f, pts[k-1][1]+(pts[k][1]-pts[k-1][1])*f]);
+    if(u<1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+const _upd=updateCouplePositionOnProgram; window.updateCouplePositionOnProgram=f=>{
+  animTok++; const prev=lastPos; _upd(f);
   const d=itineraryData.find(x=>x.id===mapCurrentDayId)||itineraryData[0], c=d.steps[mapCurrentStepIdx]||d.steps[0], n=d.steps[mapCurrentStepIdx+1];
+  lastPos={day:d.id,idx:mapCurrentStepIdx};
   $('#trackerGmapsBtn').href=mapsUrl(c,null,'walking');
-  if(n) $('#trackerNextInfo').insertAdjacentHTML('beforeend',`<br><small>${legHtml(c,n)}</small>`); };
+  if(n) $('#trackerNextInfo').insertAdjacentHTML('beforeend',`<br><small>${legHtml(c,n)}</small>`);
+  if(!f&&prev&&prev.day===d.id&&Math.abs(mapCurrentStepIdx-prev.idx)===1&&gpsWatchId===null){
+    followLeg(d.id,Math.min(prev.idx,mapCurrentStepIdx),mapCurrentStepIdx<prev.idx);
+  }
+};
+window.fitDayOnMap=()=>{
+  const d=itineraryData.find(x=>x.id===mapCurrentDayId); if(!d||!mapInstance) return;
+  stopAutoPlay(); animTok++;
+  let pts=[]; RLEGS.forEach(l=>{ if(l.mode!=='none') pts=pts.concat(geomOf(l)); });
+  if(!pts.length) pts=d.steps.map(s=>[s.lat,s.lng]);
+  mapInstance.flyToBounds(L.latLngBounds(pts),{padding:[36,36],maxZoom:15,duration:.9});
+};
+$('#btnOffline').insertAdjacentHTML('beforebegin','<button class="btn-map-ctrl" id="btnFitDay" style="grid-column:1/-1" onclick="fitDayOnMap()">🗺️ Voir tout le parcours du jour</button>');
 window.saveMapOffline=async()=>{
   const b=$('#btnOffline'), d=itineraryData.find(x=>x.id===mapCurrentDayId), U=new Set();
   const tl=(z,la,lo)=>{const n=2**z,r=la*Math.PI/180;return[Math.floor((lo+180)/360*n),Math.floor((1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*n)]};
   d.steps.forEach(s=>[14,15].forEach(z=>{const[x,y]=tl(z,s.lat,s.lng);for(let a=-1;a<=1;a++)for(let c=-1;c<=1;c++)U.add(`https://tile.openstreetmap.org/${z}/${x+a}/${y+c}.png`)}));
-  const all=[...U]; let i=0;
+  RLEGS.forEach(l=>{ if(l.mode==='air') return; const g=geomOf(l); for(let k=0;k<g.length;k+=Math.max(1,Math.floor(g.length/40))){ const[x,y]=tl(14,g[k][0],g[k][1]); U.add(`https://tile.openstreetmap.org/14/${x}/${y}.png`); } });
+  const all=[...U].slice(0,420); let i=0;
   for(const u of all){ b.textContent=`📥 ${++i}/${all.length}…`; try{await fetch(u)}catch(e){} await new Promise(r=>setTimeout(r,70)); }
   b.textContent='✅ Carte du jour sauvegardée';
 };
@@ -246,6 +402,6 @@ window.renderExpenses=()=>{
 const t0=tripIdx(); if(t0>=0){ currentDayFilter=itineraryData[t0].id; mapCurrentDayId=currentDayFilter; }
 renderDaySelector(); renderMapDaySelector(); renderDays(); renderExpenses(); showRate(); refreshStrip(); tick(); net();
 setInterval(tick,30000); setInterval(()=>updateNextUpBanner(),60000);
-loadWeather(); loadRate();
+loadWeather(); loadRate(); setTimeout(prefetchAll,4000);
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 })();
