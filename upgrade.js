@@ -7,7 +7,7 @@ const HR = { lat: 56.9546, lng: 24.1170, q: "Baznīcas iela 1, Rīga" }; // ⚠�
 const HS = { lat: 59.3331, lng: 17.9806, q: "Scandic Alvik, Gustavslundsvägen 153, Bromma" };
 const RIX = { lat: 56.9236, lng: 23.9711, q: "Riga International Airport" };
 const ARN = { lat: 59.6498, lng: 17.9238, q: "Stockholm Arlanda Airport" };
-const CT = { lat: 59.3308, lng: 18.0572, q: "Cityterminalen, Stockholm" };
+const CT = { lat: 59.3308, lng: 18.0572, q: "Cityterminalen, Klarabergsviadukten 72, Stockholm" };
 const S = (id, time, title, desc, price, P) => ({ id, time, title, desc, price, lat: P.lat, lng: P.lng, q: P.q, mapQuery: encodeURIComponent(P.q || title) });
 const home = (id, H, name, noStart) => { const d = D(id);
   if (!noStart) d.steps.unshift(S(id + "_h0", "Départ", "Départ : " + name, "Point de départ de la journée.", "", H));
@@ -36,8 +36,9 @@ Object.assign(g("j4_s3"), { time: "15h55", desc: "Coucher du soleil vers 16h10 :
 Object.assign(g("j4_s4"), { time: "17h30", desc: "Köttbullar à Södermalm (~45 €/2). Option bon marché : Max ou Pressbyrån (voir « Où manger »)." });
 d4.steps = [
   S("j4_a", "07h15", "Départ : Baznīcas iela 1 → aéroport RIX", "Bus 22 (~45 min) ou Bolt ~13 €. Vol à 09h55 : sur place vers 08h00.", "1,50 € bus / ~13 € Bolt", RIX),
-  S("j4_b", "09h55 → 10h10", "Vol Ryanair FR4641 RIX → ARN", "Stockholm a 1 h de moins que Riga. Récupérez les bagages à Arlanda.", "Vol payé", ARN),
-  S("j4_c", "11h10 → 11h58", "Flixbus Arlanda → Stockholm Cityterminalen", "Billets sur l'appli FlixBus. Cityterminalen est collé à la gare centrale (T-Centralen).", "Voir FlixBus", CT),
+  S("j4_b", "09h55 → 10h10", "Vol Ryanair FR4641 RIX → ARN", "Stockholm a 1 h de moins que Riga. Récupérez les bagages, puis suivez les panneaux « Buses / Bussar » vers l'arrêt du Terminal 5.", "Vol payé", ARN),
+  S("j4_bb", "10h45", "Arrêt FlixBus à Arlanda : Terminal 5", "D'après Swedavia, les FlixBus s'arrêtent au Terminal 5 (≈ 4 min à pied du terminal), parfois aux Terminal 2 et 4 : l'écran indique le quai exact. Soyez-y à 10h55.", "", { lat: ARN.lat, lng: ARN.lng, q: "Arlanda Airport Terminal 5 bus stop" }),
+  S("j4_c", "11h10 → 11h58", "Flixbus Arlanda → Stockholm Cityterminalen", "Arrivée à Cityterminalen (Klarabergsviadukten 72), collé à la gare centrale et à T-Centralen. Quai souvent Gate 1 : à confirmer sur le billet. Billets dans l'appli FlixBus.", "Voir FlixBus", CT),
   S("j4_d", "12h15", "Dépôt des bagages au Scandic Alvik", "Métro ligne verte T-Centralen → Alvik (~12 min). Demandez la consigne : check-in plus tard.", "SL ≈ 4 €", HS),
   S("j4_e", "13h15", "Hötorget & Hötorgshallen", "Place animée et marché couvert : falafels, sandwichs, fruits. Déjeuner pas cher.", "~10–15 € / 2", { lat: 59.3356, lng: 18.0634, q: "Hötorgshallen, Stockholm" }),
   S("j4_f", "13h50", "Drottninggatan → Sergels torg → Kungsträdgården", "Grande rue piétonne, place Sergels torg (Kulturhuset), puis le parc Kungsträdgården.", "Gratuit", { lat: 59.3326, lng: 18.0644, q: "Sergels torg, Stockholm" }),
@@ -52,14 +53,14 @@ home("j6", HS, "Scandic Alvik");
 const d7 = D("j7"), g7 = id => d7.steps.find(s => s.id === id);
 Object.assign(g7("j7_s1"), { time: "10h00" });
 Object.assign(g7("j7_s2"), { time: "13h00", title: "Souvenirs Fika & déjeuner léger chez Vete-Katten" });
-Object.assign(g7("j7_s3"), { time: "17h30 → 22h20", title: "Arlanda & Vol Retour FR4642 (20h15)", desc: "Arrivée Flixbus 17h30, enregistrement, vol à 20h15, atterrissage à Riga à 22h20." });
+Object.assign(g7("j7_s3"), { time: "17h30 → 22h20", title: "Arlanda & Vol Retour FR4642 (20h15)", desc: "Le FlixBus vous dépose au Terminal 5 (arrêt à ~4 min à pied) : vérifiez le terminal de votre vol sur la carte d'embarquement. Vol à 20h15, atterrissage à Riga à 22h20." });
 d7.title = "Vendredi 30 oct. — Dernières balades, Flixbus & Vol Retour";
 d7.tip = "🎁 Souvenirs avant 15h. Flixbus 16h50 Cityterminalen → Arlanda 17h30 (vol 20h15). Bagages : consigne du Scandic Alvik.";
 d7.steps = [
   S("j7_h0", "09h00", "Départ : check-out du Scandic Alvik", "Laissez les bagages à la réception jusqu'à 15h30, puis métro vers le centre.", "", HS),
   g7("j7_s1"), g7("j7_s2"),
   S("j7_b", "15h30", "Récupérer les bagages au Scandic Alvik", "Métro T-Centralen → Alvik (~12 min), puis retour vers Cityterminalen.", "SL ≈ 4 €", HS),
-  S("j7_c", "16h20 → 16h50", "Flixbus Cityterminalen → Arlanda (16h50 → 17h30)", "Soyez au quai 15 min avant. Billets sur l'appli FlixBus.", "Voir FlixBus", CT),
+  S("j7_c", "16h20 → 16h50", "Flixbus Cityterminalen → Arlanda (16h50 → 17h30)", "Départ de Cityterminalen (Klarabergsviadukten 72, collé à T-Centralen), quai souvent Gate 1 : à confirmer sur le billet ou l'écran. Soyez-y 15 min avant. Billets dans l'appli FlixBus.", "Voir FlixBus", CT),
   g7("j7_s3"),
   S("j7_d", "22h20", "Retour à Baznīcas iela 1", "Bus 22 (vérifier le dernier départ) ou Bolt ~13–17 € de nuit.", "1,50 € bus / ~15 € Bolt", HR)
 ];
@@ -184,19 +185,28 @@ window.updateNextUpBanner=()=>{
 };
 
 /* ---------- carte : vrais itinéraires piétons + temps de marche + hors-ligne ---------- */
+const runsOf=day=>{ const runs=[]; let cur=[day.steps[0]];
+  for(let i=1;i<day.steps.length;i++){ const a=day.steps[i-1],b=day.steps[i];
+    if(computeDistanceKm(a.lat,a.lng,b.lat,b.lng)>15){ runs.push(cur); cur=[b]; } else cur.push(b); }
+  runs.push(cur);
+  return runs.filter(r=>r.length>1&&r.some(s=>computeDistanceKm(r[0].lat,r[0].lng,s.lat,s.lng)>0.1)); };
+const showLines=(real,fb)=>{ if(!mapInstance) return; if(routePolyline) mapInstance.removeLayer(routePolyline);
+  const o={color:'#2D5A4C',opacity:.9};
+  routePolyline=L.featureGroup([L.polyline(real,{...o,weight:5}),L.polyline(fb,{...o,weight:4,dashArray:'8, 8'})]).addTo(mapInstance); };
 async function upgradeRoute(day){
-  const key='rs_route_'+day.id; let r=LS.get(key,null);
-  if(!r){ try{
-    const c=day.steps.map(s=>s.lng+','+s.lat).join(';');
-    const j=await(await fetch(`https://routing.openstreetmap.de/routed-foot/route/v1/foot/${c}?overview=full&geometries=geojson`)).json();
-    const R=j.routes&&j.routes[0]; if(j.code!=='Ok'||!R||R.distance>25000) return;
-    r={pts:R.geometry.coordinates.map(p=>[+p[1].toFixed(5),+p[0].toFixed(5)])}; LS.set(key,r);
-  }catch(e){return;} }
-  if(!mapInstance||mapCurrentDayId!==day.id) return;
-  if(routePolyline) mapInstance.removeLayer(routePolyline);
-  routePolyline=L.polyline(r.pts,{color:'#2D5A4C',weight:5,opacity:.9}).addTo(mapInstance);
+  const key='rs_route2_'+day.id; let real=LS.get(key,null), fb=[];
+  if(!real){ real=[];
+    for(const run of runsOf(day)){ try{
+      const c=run.map(s=>s.lng+','+s.lat).join(';');
+      const j=await(await fetch(`https://routing.openstreetmap.de/routed-foot/route/v1/foot/${c}?overview=full&geometries=geojson`)).json();
+      const R=j.routes&&j.routes[0]; if(j.code!=='Ok'||!R||R.distance>40000) throw 0;
+      real.push(R.geometry.coordinates.map(p=>[+p[1].toFixed(5),+p[0].toFixed(5)]));
+    }catch(e){ fb.push(run.map(s=>[s.lat,s.lng])); } }
+    if(!fb.length) LS.set(key,real);
+  }
+  if(mapCurrentDayId===day.id) showLines(real,fb);
 }
-const _draw=drawDayOnMap; window.drawDayOnMap=()=>{ _draw(); const d=itineraryData.find(x=>x.id===mapCurrentDayId); if(d) upgradeRoute(d); };
+const _draw=drawDayOnMap; window.drawDayOnMap=()=>{ _draw(); const d=itineraryData.find(x=>x.id===mapCurrentDayId); if(d){ showLines([],runsOf(d).map(r=>r.map(s=>[s.lat,s.lng]))); upgradeRoute(d); } };
 const _upd=updateCouplePositionOnProgram; window.updateCouplePositionOnProgram=f=>{ _upd(f);
   const d=itineraryData.find(x=>x.id===mapCurrentDayId)||itineraryData[0], c=d.steps[mapCurrentStepIdx]||d.steps[0], n=d.steps[mapCurrentStepIdx+1];
   $('#trackerGmapsBtn').href=mapsUrl(c,null,'walking');
