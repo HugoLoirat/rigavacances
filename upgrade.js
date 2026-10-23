@@ -1,4 +1,86 @@
 /* upgrade.js — Carnet Riga & Stockholm : météo réelle, hors-ligne réel, itinéraires piétons, budget SEK, étape "maintenant" */
+
+/* ===== ITINÉRAIRE v2 : départs/retours, bibliothèque, Stockholm détaillé, Flixbus, où manger ===== */
+(() => {
+const D = id => itineraryData.find(d => d.id === id);
+const HR = { lat: 56.9546, lng: 24.1170, q: "Baznīcas iela 1, Rīga" }; // ⚠️ coordonnées approximatives (l'adresse sert pour Google Maps)
+const HS = { lat: 59.3331, lng: 17.9806, q: "Scandic Alvik, Gustavslundsvägen 153, Bromma" };
+const RIX = { lat: 56.9236, lng: 23.9711, q: "Riga International Airport" };
+const ARN = { lat: 59.6498, lng: 17.9238, q: "Stockholm Arlanda Airport" };
+const CT = { lat: 59.3308, lng: 18.0572, q: "Cityterminalen, Stockholm" };
+const S = (id, time, title, desc, price, P) => ({ id, time, title, desc, price, lat: P.lat, lng: P.lng, q: P.q, mapQuery: encodeURIComponent(P.q || title) });
+const home = (id, H, name, noStart) => { const d = D(id);
+  if (!noStart) d.steps.unshift(S(id + "_h0", "Départ", "Départ : " + name, "Point de départ de la journée.", "", H));
+  d.steps.push(S(id + "_h1", "Retour", "Retour : " + name, "Fin de journée : retour à pied, en transport ou en Bolt (voir le trajet juste au-dessus).", "", H)); };
+const F = (n, t, p, q) => ({ n, t, p, q: q || n });
+
+// Jour 1 : arrivée → Baznīcas iela 1 puis Vecrīga
+Object.assign(D("j1").steps[0], { title: "Arrivée à RIX → Baznīcas iela 1", desc: "Bus 22 (~45 min, e-talons ou appli Mobilly) ou Bolt ~13 €. Dépôt des bagages puis départ en ville.", price: "1,50 € bus / ~13 € Bolt" });
+D("j1").steps.splice(1, 0, S("j1_h0", "Dépôt", "Baznīcas iela 1 : poser les bagages", "Point de départ de la balade dans Vecrīga.", "", HR));
+D("j1").tip = "💡 Alberta iela (Art nouveau) n'est pas dans la Vieille Ville : ~20 min à pied. Elle est prévue dimanche avec le musée ; si l'énergie est là samedi, ajoutez-la après Saint-Pierre.";
+home("j1", HR, "Baznīcas iela 1", true);
+// Jours 2, 8, 9
+["j2", "j8", "j9"].forEach(id => home(id, HR, "Baznīcas iela 1"));
+// Jour 3 : + Bibliothèque nationale
+const d3 = D("j3"), i3 = d3.steps.findIndex(s => s.id === "j3_s2");
+d3.steps[0].time = "10h30"; d3.steps[i3].time = "12h30";
+d3.steps.splice(i3 + 1, 0, S("j3_s2b", "14h00", "Bibliothèque nationale (Gaismas pils)", "Le « Château de Lumière » : architecture spectaculaire et vue depuis le dernier étage (entrée libre : vérifier horaires et pièce d'identité). Traversée à pied par le Pont de Pierre.", "Gratuit", { lat: 56.943, lng: 24.0985, q: "Latvian National Library, Riga" }));
+d3.tip = "📚 Bibliothèque ajoutée entre le panorama et Āgenskalns. Si vous êtes fatigués, sautez Kalnciema : c'est l'étape la plus facile à retirer. Spa / Skyline Bar dans l'onglet « Options ».";
+home("j3", HR, "Baznīcas iela 1");
+// Jour 4 : vol + Flixbus + centre de Stockholm
+const d4 = D("j4"), g = id => d4.steps.find(s => s.id === id);
+d4.title = "Mardi 27 oct. — Vol, Flixbus, centre de Stockholm & Gamla Stan";
+d4.tip = "🚌 Flixbus Arlanda 11h10 → Cityterminalen 11h58 : achetez les billets à l'avance sur l'appli FlixBus. Le centre se fait à pied, prévoyez de bonnes chaussures.";
+Object.assign(g("j4_s2"), { time: "14h45", title: "Gamla Stan : Stortorget & ruelles", desc: "Place Stortorget, rue Västerlånggatan, puis Mårten Trotzigs gränd (la ruelle la plus étroite). Un kanelbulle chaud en chemin." });
+Object.assign(g("j4_s3"), { time: "15h55", desc: "Coucher du soleil vers 16h10 : arrivez avant. Vue sur l'Hôtel de Ville et Gamla Stan." });
+Object.assign(g("j4_s4"), { time: "17h30", desc: "Köttbullar à Södermalm (~45 €/2). Option bon marché : Max ou Pressbyrån (voir « Où manger »)." });
+d4.steps = [
+  S("j4_a", "07h15", "Départ : Baznīcas iela 1 → aéroport RIX", "Bus 22 (~45 min) ou Bolt ~13 €. Vol à 09h55 : sur place vers 08h00.", "1,50 € bus / ~13 € Bolt", RIX),
+  S("j4_b", "09h55 → 10h10", "Vol Ryanair FR4641 RIX → ARN", "Stockholm a 1 h de moins que Riga. Récupérez les bagages à Arlanda.", "Vol payé", ARN),
+  S("j4_c", "11h10 → 11h58", "Flixbus Arlanda → Stockholm Cityterminalen", "Billets sur l'appli FlixBus. Cityterminalen est collé à la gare centrale (T-Centralen).", "Voir FlixBus", CT),
+  S("j4_d", "12h15", "Dépôt des bagages au Scandic Alvik", "Métro ligne verte T-Centralen → Alvik (~12 min). Demandez la consigne : check-in plus tard.", "SL ≈ 4 €", HS),
+  S("j4_e", "13h15", "Hötorget & Hötorgshallen", "Place animée et marché couvert : falafels, sandwichs, fruits. Déjeuner pas cher.", "~10–15 € / 2", { lat: 59.3356, lng: 18.0634, q: "Hötorgshallen, Stockholm" }),
+  S("j4_f", "13h50", "Drottninggatan → Sergels torg → Kungsträdgården", "Grande rue piétonne, place Sergels torg (Kulturhuset), puis le parc Kungsträdgården.", "Gratuit", { lat: 59.3326, lng: 18.0644, q: "Sergels torg, Stockholm" }),
+  g("j4_s2"), g("j4_s3"), g("j4_s4")
+];
+home("j4", HS, "Scandic Alvik", true);
+// Jours 5 et 6
+D("j5").steps.find(s => s.id === "j5_s2").time = "12h15";
+home("j5", HS, "Scandic Alvik", true);
+home("j6", HS, "Scandic Alvik");
+// Jour 7 : Flixbus retour + vol + retour à Baznīcas iela 1
+const d7 = D("j7"), g7 = id => d7.steps.find(s => s.id === id);
+Object.assign(g7("j7_s1"), { time: "10h00" });
+Object.assign(g7("j7_s2"), { time: "13h00", title: "Souvenirs Fika & déjeuner léger chez Vete-Katten" });
+Object.assign(g7("j7_s3"), { time: "17h30 → 22h20", title: "Arlanda & Vol Retour FR4642 (20h15)", desc: "Arrivée Flixbus 17h30, enregistrement, vol à 20h15, atterrissage à Riga à 22h20." });
+d7.title = "Vendredi 30 oct. — Dernières balades, Flixbus & Vol Retour";
+d7.tip = "🎁 Souvenirs avant 15h. Flixbus 16h50 Cityterminalen → Arlanda 17h30 (vol 20h15). Bagages : consigne du Scandic Alvik.";
+d7.steps = [
+  S("j7_h0", "09h00", "Départ : check-out du Scandic Alvik", "Laissez les bagages à la réception jusqu'à 15h30, puis métro vers le centre.", "", HS),
+  g7("j7_s1"), g7("j7_s2"),
+  S("j7_b", "15h30", "Récupérer les bagages au Scandic Alvik", "Métro T-Centralen → Alvik (~12 min), puis retour vers Cityterminalen.", "SL ≈ 4 €", HS),
+  S("j7_c", "16h20 → 16h50", "Flixbus Cityterminalen → Arlanda (16h50 → 17h30)", "Soyez au quai 15 min avant. Billets sur l'appli FlixBus.", "Voir FlixBus", CT),
+  g7("j7_s3"),
+  S("j7_d", "22h20", "Retour à Baznīcas iela 1", "Bus 22 (vérifier le dernier départ) ou Bolt ~13–17 € de nuit.", "1,50 € bus / ~15 € Bolt", HR)
+];
+// Où manger (rapide & pas cher) — à vérifier sur place (horaires / prix)
+D("j1").food = [F("Lido Vecrīga", "Buffet letton self-service", "8–12 €/pers", "Lido Vecrīga, Rīga"), F("Pelmeņi XL", "Raviolis lettons à emporter", "4–7 €", "Pelmeņi XL, Rīga"), F("Mārtiņa Beķereja", "Boulangerie, pâtisseries", "2–5 €", "Mārtiņa Beķereja, Rīga"), F("Čili Pica", "Pizza locale", "6–10 €", "Čili Pica, Rīga")];
+D("j2").food = [F("Rocket Bean Roastery", "Café, brunch, pâtisseries", "6–12 €", "Rocket Bean Roastery, Rīga"), F("Mārtiņa Beķereja", "Boulangerie, sandwichs", "2–5 €", "Mārtiņa Beķereja, Rīga"), F("Čili Pica", "Pizza locale", "6–10 €", "Čili Pica, Rīga"), F("Rimi (supermarché)", "Pique-nique, salades, plats préparés", "3–7 €", "Rimi, Rīga")];
+D("j3").food = [F("Marché central : pavillons", "Soupes, pīrāgi, poisson fumé, pelmeņi", "3–8 €", "Rīgas Centrāltirgus"), F("Āgenskalna tirgus", "Halle gourmande, stands variés", "6–12 €", "Āgenskalna tirgus"), F("Pelmeņi XL", "Raviolis lettons à emporter", "4–7 €", "Pelmeņi XL, Rīga"), F("Lido Vecrīga", "Buffet letton self-service", "8–12 €/pers", "Lido Vecrīga, Rīga")];
+D("j8").food = [F("Boulangeries de Jomas iela", "Pâtisseries, sandwichs", "2–6 €", "bakery Jomas iela Jūrmala"), F("Rimi / Maxima à Majori", "Pique-nique pour la plage", "4–8 €", "Rimi Majori Jūrmala"), F("Pancakes sur Jomas iela", "Crêpes sucrées ou salées", "5–9 €", "pancakes Jomas iela Jūrmala")];
+D("j9").food = [F("Rocket Bean Roastery", "Brunch (déjà prévu)", "6–12 €", "Rocket Bean Roastery, Rīga"), F("Lido Vecrīga", "Buffet letton self-service", "8–12 €/pers", "Lido Vecrīga, Rīga"), F("Pelmeņi XL", "Raviolis lettons à emporter", "4–7 €", "Pelmeņi XL, Rīga")];
+D("j4").food = [F("Hötorgshallen", "Marché couvert : falafel, sandwichs, fruits", "8–12 €", "Hötorgshallen, Stockholm"), F("Pressbyrån", "Hot-dogs et sandwichs de kiosque", "3–6 €", "Pressbyrån, Stockholm"), F("Max Burgers", "Fast-food suédois, menu complet", "9–11 €", "Max Burgers, Stockholm"), F("Dagens lunch", "Menu du jour en semaine, 11h–14h (plat + salade + café)", "10–14 €", "dagens lunch Stockholm centrum")];
+D("j5").food = [F("Fabrique (Gamla Stan)", "Kanelbullar et pains frais", "3–5 €", "Fabrique Gamla Stan, Stockholm"), F("Pressbyrån", "Hot-dogs et sandwichs de kiosque", "3–6 €", "Pressbyrån, Stockholm"), F("Max Burgers", "Fast-food suédois, menu complet", "9–11 €", "Max Burgers, Stockholm"), F("ICA / Coop", "Salades et plats préparés", "5–9 €", "ICA Supermarket, Stockholm")];
+D("j6").food = [F("Östermalms Saluhall", "Halle chic : partagez un plat ou une assiette", "15–25 €", "Östermalms Saluhall, Stockholm"), F("Hötorgshallen", "Moins cher que Östermalm", "8–12 €", "Hötorgshallen, Stockholm"), F("Dagens lunch", "Menu du jour en semaine, 11h–14h", "10–14 €", "dagens lunch Stockholm centrum"), F("ICA / Coop", "Salades et plats préparés", "5–9 €", "ICA Supermarket, Stockholm")];
+D("j7").food = [F("Vete-Katten", "Fika, pâtisseries (déjà prévu)", "6–10 €", "Vete-Katten, Stockholm"), F("Pressbyrån", "Sandwichs avant le bus", "3–6 €", "Pressbyrån, Stockholm"), F("Max Burgers", "Repas rapide", "9–11 €", "Max Burgers, Stockholm")];
+
+const st = document.createElement("style");
+st.textContent = `.food-box{margin-top:12px;background:var(--bg-sage-light);border-radius:12px;padding:10px 12px;font-size:.8rem;color:var(--accent-forest)}.food-row{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:6px 0;border-top:1px dashed #CFE0D7;color:var(--text-main)}.food-row span{color:var(--text-muted);display:block;font-size:.74rem}.food-row em{font-style:normal;font-weight:700;margin-right:6px}`;
+document.head.appendChild(st);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+window.dayHook = (card, day) => { if (!day.food) return;
+  card.insertAdjacentHTML("beforeend", `<div class="food-box"><strong>🍴 Où manger (rapide & pas cher)</strong>${day.food.map(f => `<div class="food-row"><div><b>${esc(f.n)}</b><span>${esc(f.t)}</span></div><div><em>${esc(f.p)}</em><a class="btn-map" target="_blank" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(f.q)}">📍</a></div></div>`).join("")}</div>`); };
+})();
 (() => {
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -9,7 +91,7 @@ const tripIdx = () => { const n=new Date(); const i=Math.round((new Date(n.getFu
 
 /* ---------- données ---------- */
 itineraryData.forEach((d,i)=>{ d.date=new Date(2026,9,24+i); d.city=['j4','j5','j6','j7'].includes(d.id)?'sto':'rig'; });
-itineraryData.find(d=>d.id==='j5').steps[1].time='12h15'; // relève de la garde
+
 
 /* ---------- head / CSS ---------- */
 const vp=$('meta[name=viewport]'); if(vp) vp.content='width=device-width, initial-scale=1, viewport-fit=cover';
@@ -64,8 +146,14 @@ async function loadWeather(){
 }
 
 /* ---------- distances, temps à pied, liens "Y aller" ---------- */
-const dirUrl=(s,prev)=>`https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}&travelmode=${(prev&&computeDistanceKm(prev.lat,prev.lng,s.lat,s.lng)<2.5)?'walking':'transit'}`;
-const legText=(a,b)=>{ const km=computeDistanceKm(a.lat,a.lng,b.lat,b.lng)*1.3; return km>3?`${km.toFixed(1)} km : plutôt en transport`:`~${Math.max(1,Math.round(km/4.8*60))} min à pied (${km.toFixed(1)} km)`; };
+const kmBetween=(a,b)=>computeDistanceKm(a.lat,a.lng,b.lat,b.lng)*1.3;
+const ptq=p=>p.q?encodeURIComponent(p.q):p.lat+','+p.lng;
+const mapsUrl=(s,o,mode)=>`https://www.google.com/maps/dir/?api=1${o?'&origin='+ptq(o):''}&destination=${ptq(s)}&travelmode=${mode}`;
+const legHtml=(a,b)=>{ const km=kmBetween(a,b), min=Math.max(1,Math.round(km/4.8*60)), sto=b.lat>58;
+  if(km>25) return '🚌 Trajet longue distance : voir les horaires de l’étape';
+  if(km<1.2) return `🚶 ~${min} min (${km.toFixed(1)} km)`;
+  const lo=sto?Math.max(7,3.5+1.5*km):Math.max(3,1.5+0.7*km);
+  return `${km<3?`🚶 ~${min} min · `:''}🚕 Bolt ≈ ${Math.round(lo)}–${Math.round(lo*1.35)} € · <a href="${mapsUrl(b,a,'transit')}" target="_blank">🚌 Bus/tram ${sto?'≈ 4 € (SL)':'1,50 €'} : itinéraire</a>`; };
 
 /* ---------- wrappers (le code d'origine reste intact) ---------- */
 const _fd=filterDay; window.filterDay=id=>{ _fd(id); refreshStrip(); };
@@ -75,12 +163,12 @@ const _rd=renderDays; window.renderDays=()=>{ _rd();
   const list=currentDayFilter==='all'?itineraryData:itineraryData.filter(d=>d.id===currentDayFilter);
   document.querySelectorAll('#daysContainer .day-card').forEach((card,i)=>{ const day=list[i]; if(!day) return;
     card.querySelector('.day-card-header').insertAdjacentHTML('afterend',`<div class="weather-strip wx">${weatherHtml(day)}</div>`);
-    card.querySelectorAll('.step-item').forEach((row,j)=>{ const s=day.steps[j], prev=day.steps[j-1];
-      const a=row.querySelector('a.btn-map'); if(a){ a.href=dirUrl(s,prev); a.textContent='🧭 Y aller'; }
-      if(prev) row.querySelector('.step-actions').insertAdjacentHTML('beforebegin',`<div class="leg">🚶 ${legText(prev,s)}</div>`); }); });
+    if(window.dayHook) window.dayHook(card,day); card.querySelectorAll('.step-item').forEach((row,j)=>{ const s=day.steps[j], prev=day.steps[j-1];
+      const a=row.querySelector('a.btn-map'); if(a){ a.href=mapsUrl(s,null,(prev&&kmBetween(prev,s)<3)?'walking':'transit'); a.textContent='🧭 Y aller'; }
+      if(prev) row.querySelector('.step-actions').insertAdjacentHTML('beforebegin',`<div class="leg">${legHtml(prev,s)}</div>`); }); });
   updateNextUpBanner(); };
 
-const stepMin=s=>{ const m=/(\d{1,2})h(\d{2})?/.exec(s.time); if(m) return +m[1]*60+(+m[2]||0); const t=s.time.toLowerCase(); return t.includes('matin')?570:t.includes('après')?840:t.includes('fin de')?1020:t.includes('soir')?1140:720; };
+const stepMin=s=>{ const m=/(\d{1,2})h(\d{2})?/.exec(s.time); if(m) return +m[1]*60+(+m[2]||0); const t=s.time.toLowerCase(); return t.includes('retour')?1260:t.includes('départ')||t.includes('dépôt')?480:t.includes('matin')?570:t.includes('après')?840:t.includes('fin de')?1020:t.includes('soir')?1140:720; };
 window.updateNextUpBanner=()=>{
   const t=tripIdx(), n=new Date(), nm=n.getHours()*60+n.getMinutes();
   const order=t>=0?itineraryData.slice(t).concat(itineraryData.slice(0,t)):itineraryData;
@@ -111,8 +199,8 @@ async function upgradeRoute(day){
 const _draw=drawDayOnMap; window.drawDayOnMap=()=>{ _draw(); const d=itineraryData.find(x=>x.id===mapCurrentDayId); if(d) upgradeRoute(d); };
 const _upd=updateCouplePositionOnProgram; window.updateCouplePositionOnProgram=f=>{ _upd(f);
   const d=itineraryData.find(x=>x.id===mapCurrentDayId)||itineraryData[0], c=d.steps[mapCurrentStepIdx]||d.steps[0], n=d.steps[mapCurrentStepIdx+1];
-  $('#trackerGmapsBtn').href=dirUrl(c,d.steps[mapCurrentStepIdx-1]);
-  if(n) $('#trackerNextInfo').insertAdjacentHTML('beforeend',`<br><small>🚶 ${legText(c,n)}</small>`); };
+  $('#trackerGmapsBtn').href=mapsUrl(c,null,'walking');
+  if(n) $('#trackerNextInfo').insertAdjacentHTML('beforeend',`<br><small>${legHtml(c,n)}</small>`); };
 window.saveMapOffline=async()=>{
   const b=$('#btnOffline'), d=itineraryData.find(x=>x.id===mapCurrentDayId), U=new Set();
   const tl=(z,la,lo)=>{const n=2**z,r=la*Math.PI/180;return[Math.floor((lo+180)/360*n),Math.floor((1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*n)]};
