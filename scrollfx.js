@@ -5,7 +5,7 @@
    4. En-tête qui s'éloigne en douceur + barre compacte vitrée + barre de progression de lecture
    Désactivé automatiquement si l'appareil demande « réduire les animations ». */
 (() => {
-  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if ((window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) || localStorage.getItem('rs_calm') === '1') return;
   const root = document.documentElement;
   root.classList.add('fx');
 
@@ -92,6 +92,7 @@
     if (bar.classList.contains('on') !== compact) bar.classList.toggle('on', compact);
     if (compact) { const t = document.getElementById('progressText'); const s = t ? t.textContent : ''; if (barTxt.textContent !== s) barTxt.textContent = s; }
 
+    root.classList.toggle('hero-off', y > 420);
     // en-tête : s'éloigne doucement
     if (hero) {
       const k = clamp(y / 320, 0, 1);
@@ -103,7 +104,8 @@
     const tab = document.querySelector('.tab-section.active');
     if (!tab || tab.id !== 'tab-itineraire') return;
     const focusY = vh * 0.46, span = vh * 0.55;
-    const items = [...tab.querySelectorAll('.step-item')], rects = items.map(el => el.getBoundingClientRect());
+    const cards = [...tab.querySelectorAll('.day-card')].filter(c => { const r = c.getBoundingClientRect(); return r.bottom > -vh * 0.5 && r.top < vh * 1.5; });
+    const items = cards.flatMap(c => [...c.querySelectorAll('.step-item')]), rects = items.map(el => el.getBoundingClientRect());
     let best = null, bestD = 1e9;
     items.forEach((el, i) => {
       const r = rects[i];
