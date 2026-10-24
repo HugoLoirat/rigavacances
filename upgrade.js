@@ -47,6 +47,18 @@ d4.steps = [
 home("j4", HS, "Scandic Alvik", true);
 // Jours 5 et 6
 D("j5").steps.find(s => s.id === "j5_s2").time = "12h15";
+// Jour 5 : The Viking Museum juste après le ferry, puis le Vasa (ouvert jusqu'à 20h le mercredi)
+{ const d5 = D("j5"), iv = d5.steps.findIndex(s => s.id === "j5_s4");
+  d5.title = "Mercredi 28 oct. — Relève de la Garde, Ferry, Vikings & Musée Vasa";
+  d5.steps[iv].time = "16h00 – 17h45";
+  d5.steps.splice(iv, 0, S("j5_s3b", "14h00 – 15h45", "The Viking Museum (Djurgården)", "Exposition interactive sur la vie des Vikings, objets prêtés par le Musée d'Histoire, personnages en costume d'époque et manège-voyage « Ragnfrid's Saga » (≈ 11 min, inclus). Débarquez du ferry à Allmänna gränd (≈ 5 min à pied). Ouvert environ 10h–17h : vérifiez sur thevikingmuseum.com. Paiement sans espèces.", "~33 € / 2", { lat: 59.3266, lng: 18.0952, q: "The Viking Museum, Djurgårdsvägen 48, Stockholm" })); }
+// Jour 6 : Skansen (reconstitution de la vie d'autrefois) le matin, gravlax et Kastellet décalés
+{ const d6 = D("j6"), g6 = id => d6.steps.find(s => s.id === id);
+  d6.title = "Jeudi 29 oct. — Skansen, Gravlax, Îlot de Kastellet & Métro d'Art";
+  d6.tip = "🏡 Skansen ferme à 16h : arrivez à l'ouverture (10h) et prévoyez ~3 h. Achetez le billet en ligne (moins cher) et pensez à la carte étudiante.";
+  g6("j6_s1").time = "09h30"; g6("j6_s2").time = "13h45"; g6("j6_s3").time = "15h15";
+  g6("j6_s3").desc = "Photo sur Skeppsholmsbron, île de Skeppsholmen et citadelle de Kastellet. La golden hour commence vers 15h : la lumière est idéale, arrivez avant le coucher (~16h02).";
+  d6.steps.splice(1, 0, S("j6_sk", "10h15 – 13h15", "Skansen : le village d'autrefois", "Musée en plein air : fermes, maisons et ateliers d'époque venus de toute la Suède, avec artisans et guides en costume (verrier, poterie, boulangerie, école de 1800…) selon les jours. Tram 7 depuis Djurgårdsbron. Ouvert 10h–16h pendant les vacances d'automne. Animations réduites hors saison : calendrier sur skansen.se. Paiement sans espèces.", "~45 € / 2", { lat: 59.3263, lng: 18.1059, q: "Skansen, Djurgårdsslätten 49-51, Stockholm" })); }
 home("j5", HS, "Scandic Alvik", true);
 home("j6", HS, "Scandic Alvik");
 // Jour 7 : Flixbus retour + vol + retour à Baznīcas iela 1
