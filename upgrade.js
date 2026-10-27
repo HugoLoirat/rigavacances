@@ -61,6 +61,24 @@ D("j5").steps.find(s => s.id === "j5_s2").time = "12h15";
   d6.steps.splice(1, 0, S("j6_sk", "10h15 – 13h15", "Skansen : le village d'autrefois", "Musée en plein air : fermes, maisons et ateliers d'époque venus de toute la Suède, avec artisans et guides en costume (verrier, poterie, boulangerie, école de 1800…) selon les jours. Tram 7 depuis Djurgårdsbron. Ouvert 10h–16h pendant les vacances d'automne. Animations réduites hors saison : calendrier sur skansen.se. Paiement sans espèces.", "~45 € / 2", { lat: 59.3263, lng: 18.1059, q: "Skansen, Djurgårdsslätten 49-51, Stockholm" })); }
 home("j5", HS, "Scandic Alvik", true);
 home("j6", HS, "Scandic Alvik");
+// ===== Jeudi : croisière 10h00 au pied du Palais Royal, puis inversion mercredi / jeudi =====
+{ const d5 = D("j5"), d6 = D("j6"), g5 = id => d5.steps.find(s => s.id === id);
+  g5("j5_s1").time = "08h00";
+  d5.steps.splice(1, 0, Object.assign(S("j5_boat", "09h45 → ~12h15", "Croisière dans l'archipel de Stockholm (départ 10h00)", "Embarquement au quai Skeppsbrokajen, près de la statue de Gustav III, au pied du Palais Royal (Gamla Stan). Soyez-y à 09h45 avec le voucher GetYourGuide. Durée ≈ 2 h à 2 h 30 : l'heure de retour est sur votre voucher. Depuis l'hôtel : métro Alvik → T-Centralen puis ligne rouge → Gamla Stan (~30 min), départ à 09h00. Habillez-vous chaudement (vent sur l'eau).", "Billet réservé (GetYourGuide)", { lat: 59.3268, lng: 18.0735, q: "Skeppsbrokajen, Gustav III statue, Stockholm" }), { link: "https://www.getyourguide.com/fr-fr/stockholm-l50/stockholm-tour-en-bateau-de-l-archipel-t811343/?q=Stockholm" }));
+  g5("j5_s2").desc += " La relève a lieu chaque jour à 12h15 dans la cour (le grand défilé en ville surtout mer., sam., dim.) : durée ~40 min, arrivez 15 min avant.";
+  g5("j5_s3").time = "13h15";
+  g5("j5_s4").time = "13h45 – 15h30"; g5("j5_s4").desc += " Ferme à 17h le jeudi (20h le mercredi) : vérifiez vasamuseet.se.";
+  g5("j5_s3b").time = "15h45 – 17h00"; g5("j5_s3b").desc = g5("j5_s3b").desc.replace("Débarquez du ferry à Allmänna gränd (≈ 5 min à pied).", "À ~10 min à pied du Musée Vasa : visite plus courte, vérifiez l'heure de fermeture.");
+  const ia = d5.steps.findIndex(s => s.id === "j5_s3b"), ib = d5.steps.findIndex(s => s.id === "j5_s4");
+  [d5.steps[ia], d5.steps[ib]] = [d5.steps[ib], d5.steps[ia]];
+  d5.tip = "🚤 Croisière 10h00 (Skeppsbrokajen, au pied du Palais Royal), puis la relève à 12h15 juste à côté. Le déjeuner se prend vite : Vasa avant 17h.";
+  d5.title = "Jeudi 29 oct. — Croisière, Relève de la Garde, Musée Vasa & Vikings";
+  d6.title = d6.title.replace("Jeudi 29 oct.", "Mercredi 28 oct.");
+  const i5 = itineraryData.indexOf(d5), i6 = itineraryData.indexOf(d6);
+  itineraryData[i5] = d6; itineraryData[i6] = d5;
+  [d5.shortLabel, d6.shortLabel] = [d6.shortLabel, d5.shortLabel];
+  [d5.tag, d6.tag] = [d6.tag, d5.tag];
+  [d5.weather, d6.weather] = [d6.weather, d5.weather]; }
 // Jour 7 : Flixbus retour + vol + retour à Baznīcas iela 1
 const d7 = D("j7"), g7 = id => d7.steps.find(s => s.id === id);
 Object.assign(g7("j7_s1"), { time: "10h00" });
@@ -177,7 +195,7 @@ const _rd=renderDays; window.renderDays=()=>{ _rd();
   document.querySelectorAll('#daysContainer .day-card').forEach((card,i)=>{ const day=list[i]; if(!day) return;
     card.querySelector('.day-card-header').insertAdjacentHTML('afterend',`<div class="weather-strip wx">${weatherHtml(day)}</div>`);
     if(window.dayHook) window.dayHook(card,day); card.querySelectorAll('.step-item').forEach((row,j)=>{ const s=day.steps[j], prev=day.steps[j-1];
-      const a=row.querySelector('a.btn-map'); if(a){ a.href=mapsUrl(s,null,(prev&&kmBetween(prev,s)<3)?'walking':'transit'); a.textContent='🧭 Y aller'; }
+      const a=row.querySelector('a.btn-map'); if(a){ a.href=mapsUrl(s,null,(prev&&kmBetween(prev,s)<3)?'walking':'transit'); a.textContent='🧭 Y aller'; } if(s.link) row.querySelector('.step-actions').insertAdjacentHTML('beforeend',`<a class="btn-map terra" target="_blank" rel="noopener" href="${s.link}">🎟️ Billet GetYourGuide</a>`);
       if(prev) row.querySelector('.step-actions').insertAdjacentHTML('beforebegin',`<div class="leg">${legHtml(prev,s)}</div>`); }); });
   updateNextUpBanner(); };
 
